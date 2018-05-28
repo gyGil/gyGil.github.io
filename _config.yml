@@ -18,7 +18,7 @@ remote_theme: mmistakes/so-simple-theme
 locale: en-US
 title: "Gil's Blog"
 description: "AI Enthusiast"
-baseurl: 
+baseurl:
 url: "https://gygil.github.io"
 logo: # path of site logo, e.g. "/images/logo.png"
 date_format: "%B %-d, %Y"
@@ -98,6 +98,6 @@ author:
 
 # Footer Links
 footer_links:
-  - title: Feed
-    url: atom.xml
-    icon: fas fa-rss-square
+  - title: LinkedIn
+    url: https://www.linkedin.com/in/gygil/
+    icon: fas fa-linkedin-square
