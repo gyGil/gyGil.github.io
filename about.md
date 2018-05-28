@@ -1,6 +1,6 @@
 ---
 title: About Me
-layout: post
+layout: about
 permalink: /about/
 sitemap: false
 ---
