@@ -18,8 +18,8 @@ remote_theme: mmistakes/so-simple-theme
 locale: en-US
 title: "Gil's Blog"
 description: "AI Enthusiast"
-baseurl:
-url: "https://gygil.github.io"
+baseurl: # the subpath of your site, e.g. "/blog"
+url: #"https://gygil.github.io"
 logo: # path of site logo, e.g. "/images/logo.png"
 date_format: "%B %-d, %Y"
 read_time: true
@@ -89,7 +89,7 @@ defaults:
 # Site Author
 author:
   name: Geunyoung Gil
-  picture: /images/gilface.jpg
+  picture: /images/gil_photo.jpg
   email:
   twitter:
   links:
