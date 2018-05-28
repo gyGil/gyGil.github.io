@@ -3,7 +3,16 @@ layout: page
 ---
 
 {{ content }}
-{% include page-author.html %}
+
+{%- if author.picture -%}
+  {%- if author.picture contains "://" -%}
+    {%- assign author_picture = author.picture -%}
+  {%- else -%}
+    {%- assign author_picture = author.picture | relative_url -%}
+  {%- endif -%}
+  <img src="{{ author_picture }}" class="author-avatar u-photo" alt="{{ author.name }}">
+{%- endif -%}
+
 Hi, My name is Geunyoung Gil in Canada. <br/>
 I'm an enthusiast to implement deep learning solutions for real world.
 I enjoy to combine deep learning algorithms with web platforms.
