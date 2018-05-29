@@ -29,7 +29,7 @@ I built a deep neural network(bidirectional RNN with GRU units) as part of end-t
 ## Preprocessing dataset
 The most common datasets used for machine translation are from [WMT](https://http://www.statmt.org/). However, that will take a long time to train a neural network on. So, I used comparably the small dataset for my project's purpose.
 
-### *Load Data*
+#### *Load Data*
 English and French Data are loaded. The both datasets are sequenced already.
 ```python
 import helper
@@ -48,7 +48,7 @@ small_vocab_fr Line 1:  *new jersey est parfois calme pendant l' automne , et il
 small_vocab_en Line 2:  *the united states is usually chilly during july , and it is usually freezing in november.*
 small_vocab_fr Line 2: *les états-unis est généralement froid en juillet , et il gèle habituellement en novembre.*
 
-### *Tokenize and Padding*
+#### *Tokenize and Padding*
 Tokenize the words into ids.
 
 ```python
