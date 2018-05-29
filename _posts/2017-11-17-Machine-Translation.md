@@ -31,6 +31,14 @@ The most common datasets used for machine translation are from [WMT](https://htt
 
 #### Load Data
 English and French Data are loaded. The both datasets are sequenced already.
+```python
+import helper
+
+# Load English data
+english_sentences = helper.load_data('data/small_vocab_en')
+# Load French data
+french_sentences = helper.load_data('data/small_vocab_fr')
+```
 
 
 
