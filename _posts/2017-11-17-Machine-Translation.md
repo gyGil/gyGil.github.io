@@ -41,10 +41,55 @@ french_sentences = helper.load_data('data/small_vocab_fr')
 ```
 The sample of pair English and French sentence are below.
 
-```
-small_vocab_en Line 1:  new jersey is sometimes quiet during autumn , and it is snowy in april.
-small_vocab_fr Line 1:  new jersey est parfois calme pendant l' automne , et il est neigeux en avril.
 
-small_vocab_en Line 2:  the united states is usually chilly during july , and it is usually freezing in november.
-small_vocab_fr Line 2:  les états-unis est généralement froid en juillet , et il gèle habituellement en novembre.
+*small_vocab_en Line 1:  new jersey is sometimes quiet during autumn , and it is snowy in april.*
+*small_vocab_fr Line 1:  new jersey est parfois calme pendant l' automne , et il est neigeux en avril.*
+
+*small_vocab_en Line 2:  the united states is usually chilly during july , and it is usually freezing in november.*
+*small_vocab_fr Line 2:  les états-unis est généralement froid en juillet , et il gèle habituellement en novembre.*
+
+### *Tokenize and Padding*
+1. Tokenize the words into ids.
+2. Add padding to make all the sequences the same length.
+
+I used Keras functions for these.
+
+```Python
+import project_tests as tests
+from keras.preprocessing.text import Tokenizer
+
+
+def tokenize(x):
+    """
+    Tokenize x
+    :param x: List of sentences/strings to be tokenized
+    :return: Tuple of (tokenized x data, tokenizer used to tokenize x)
+    """
+    # TODO: Implement
+    tokenizer = Tokenizer()
+    tokenizer.fit_on_texts(x)
+
+    return tokenizer.texts_to_sequences(x), tokenizer
 ```
+
+```Python
+import numpy as np
+from keras.preprocessing.sequence import pad_sequences
+
+
+def pad(x, length=None):
+    """
+    Pad x
+    :param x: List of sequences.
+    :param length: Length to pad the sequence to.  If None, use length of longest sequence in x.
+    :return: Padded numpy array of sequences
+    """
+    # TODO: Implement
+    return pad_sequences(x, maxlen=length, padding='post', truncating='post')
+```
+
+The below is the results by Tokenizing and Padding.
+
+*The quick brown fox jumps over the lazy dog .*
+[1 2 4 5 6 7 1 8 9]
+[1 2 4 5 6 7 1 8 9 0]
