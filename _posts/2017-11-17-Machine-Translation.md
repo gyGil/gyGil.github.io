@@ -49,10 +49,7 @@ small_vocab_en Line 2:  *the united states is usually chilly during july , and i
 small_vocab_fr Line 2: *les états-unis est généralement froid en juillet , et il gèle habituellement en novembre.*
 
 ### *Tokenize and Padding*
-1. Tokenize the words into ids.
-2. Add padding to make all the sequences the same length.
-
-I used Keras functions for these.
+Tokenize the words into ids.
 
 ```python
 import project_tests as tests
@@ -71,6 +68,8 @@ def tokenize(x):
 
     return tokenizer.texts_to_sequences(x), tokenizer
 ```
+
+Add padding to make all the sequences the same length.
 
 ```python
 import numpy as np
@@ -91,5 +90,7 @@ def pad(x, length=None):
 The below is the results by Tokenizing and Padding.
 
 *The quick brown fox jumps over the lazy dog .*
+
 [1 2 4 5 6 7 1 8 9]
+
 [1 2 4 5 6 7 1 8 9 0]
