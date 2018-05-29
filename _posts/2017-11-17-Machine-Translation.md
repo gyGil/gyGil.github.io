@@ -1,18 +1,30 @@
 ---
 title: "Machine Translation"
-excerpt: "Post displaying the various ways one can highlight code blocks with Jekyll. Some options include standard Markdown, GitHub Flavored Markdown, and Jekyll's `{% highlight %}` tag."
-last_modified_at: 2017-03-09T10:27:01-05:00
+excerpt: ""
+last_modified_at:
 categories:
   - Natural Language Processing
 tags:
   - NLP
   - RNN
   - GRU
+  - Keras
+  - TensorFlow
 ---
 
-Syntax highlighting is a feature that displays source code, in different colors and fonts according to the category of terms. This feature facilitates writing in a structured language such as a programming language or a markup language as both structures and syntax errors are visually distinct. Highlighting does not affect the meaning of the text itself; it is intended only for human readers.[^1]
+## Introduction
+This project is for translating English sentence to French sentence.
+I built a deep neural network(bidirectional RNN with GRU units) as part of end-to-end machine translation pipeline. The completed pipeline will accept English text as input and return the French translation. I compared the results of various RNN structures at the end.
 
-[^1]: <http://en.wikipedia.org/wiki/Syntax_highlighting>
+## Process
+* Preprocess - Convert text to sequence of integers
+* Models - Created bidirectional RNN with GRU units which accepts a sequence of integers as input and returns a probability distribution over possible translations
+* Prediction - Run the model on English text.
+
+## Environment
+* AWS EC2 p2.xlarge
+* Jupyter Notebook
+* Python 3.5, Keras, TensorFlow 1.1
 
 ## GFM Code Blocks
 
