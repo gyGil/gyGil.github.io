@@ -26,7 +26,13 @@ I built a deep neural network(bidirectional RNN with GRU units) as part of end-t
 * Jupyter Notebook
 * Python 3.5, Keras, TensorFlow 1.1
 
-## GFM Code Blocks
+## Preprocessing dataset
+The most common datasets used for machine translation are from [WMT](https://http://www.statmt.org/). However, that will take a long time to train a neural network on. So, I used comparably the small dataset for my project's purpose.
+
+### Load Data
+English and French Data are loaded. The both datasets are sequenced already.
+
+
 
 GitHub Flavored Markdown [fenced code blocks](https://help.github.com/articles/creating-and-highlighting-code-blocks/) are supported by default with Jekyll. You may need to update your `_config.yml` file to enable them if you're using an older version.
 
