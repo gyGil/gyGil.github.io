@@ -39,6 +39,7 @@ english_sentences = helper.load_data('data/small_vocab_en')
 # Load French data
 french_sentences = helper.load_data('data/small_vocab_fr')
 ```
+> Sample
 ```
 small_vocab_en Line 1:  new jersey is sometimes quiet during autumn , and it is snowy in april .
 small_vocab_fr Line 1:  new jersey est parfois calme pendant l' automne , et il est neigeux en avril .
