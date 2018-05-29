@@ -41,8 +41,10 @@ french_sentences = helper.load_data('data/small_vocab_fr')
 ```
 The sample of pair English and French sentence are below.
 
-**small_vocab_en Line 1**:  *new jersey is sometimes quiet during autumn , and it is snowy in april.*
-**small_vocab_fr Line 1**:  *new jersey est parfois calme pendant l' automne , et il est neigeux en avril.*
-
-**small_vocab_en Line 2**:  *the united states is usually chilly during july , and it is usually freezing in november.*
-**small_vocab_fr Line 2**:  *les états-unis est généralement froid en juillet , et il gèle habituellement en novembre.*
+>small_vocab_en Line 1:  *new jersey is sometimes quiet during autumn , and it is snowy in april.*
+>
+>small_vocab_fr Line 1:  *new jersey est parfois calme pendant l' automne , et il est neigeux en avril.*
+>
+>small_vocab_en Line 2:  *the united states is usually chilly during july , and it is usually freezing in november.*
+>
+>small_vocab_fr Line 2:  *les états-unis est généralement froid en juillet , et il gèle habituellement en novembre.*
