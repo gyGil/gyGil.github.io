@@ -42,11 +42,11 @@ french_sentences = helper.load_data('data/small_vocab_fr')
 The sample of pair English and French sentence are below.
 
 
-*small_vocab_en Line 1:  new jersey is sometimes quiet during autumn , and it is snowy in april.*
-*small_vocab_fr Line 1:  new jersey est parfois calme pendant l' automne , et il est neigeux en avril.*
+small_vocab_en Line 1:  *new jersey is sometimes quiet during autumn , and it is snowy in april.*
+small_vocab_fr Line 1:  *new jersey est parfois calme pendant l' automne , et il est neigeux en avril.*
 
-*small_vocab_en Line 2:  the united states is usually chilly during july , and it is usually freezing in november.*
-*small_vocab_fr Line 2:  les états-unis est généralement froid en juillet , et il gèle habituellement en novembre.*
+small_vocab_en Line 2:  *the united states is usually chilly during july , and it is usually freezing in november.*
+small_vocab_fr Line 2: *les états-unis est généralement froid en juillet , et il gèle habituellement en novembre.*
 
 ### *Tokenize and Padding*
 1. Tokenize the words into ids.
@@ -54,7 +54,7 @@ The sample of pair English and French sentence are below.
 
 I used Keras functions for these.
 
-```Python
+```python
 import project_tests as tests
 from keras.preprocessing.text import Tokenizer
 
@@ -72,7 +72,7 @@ def tokenize(x):
     return tokenizer.texts_to_sequences(x), tokenizer
 ```
 
-```Python
+```python
 import numpy as np
 from keras.preprocessing.sequence import pad_sequences
 
