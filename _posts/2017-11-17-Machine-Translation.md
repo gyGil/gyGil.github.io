@@ -90,5 +90,5 @@ def pad(x, length=None):
 The below is the results by Tokenizing and Padding.
 
 *The quick brown fox jumps over the lazy dog .*  
-[1 2 4 5 6 7 1 8 9]  
-[1 2 4 5 6 7 1 8 9 0]  
+[1 2 4 5 6 7 1 8 9]  -> Tokenizing  
+[1 2 4 5 6 7 1 8 9 0]  -> Padding  
