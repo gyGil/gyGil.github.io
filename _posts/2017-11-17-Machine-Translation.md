@@ -174,7 +174,7 @@ The example of prediction:
 
 English: *He saw an old yellow truck*  
 French: *Il a vu un vieux camion jaune*   
-Prediction: **il a vu un vieux camion jaune <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD>**
+Prediction: il a vu un vieux camion jaune <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD>
 
 ## Comparison
 
