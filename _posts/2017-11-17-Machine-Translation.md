@@ -95,9 +95,10 @@ The below is the results by Tokenizing and Padding.
 
 ## Model
 
-I tested several models to get better accuracy in test dataset. I will present the best model which is bidirectional RNN with GRU and Embedding Layer. RNN with GRU or LSTM is a good neural network model for sequence data like sentence or stock price. Also Embedding layer is one of important concept for Natural Language Processing. At the end, I will compare the results of different models. 
+I tested several models to get better accuracy in test dataset. I will present the best model which is bidirectional RNN with GRU and Embedding Layer. RNN with GRU or LSTM is a good neural network model for sequence data like sentence or stock price. Also Embedding layer is one of important concept for Natural Language Processing. At the end, I will compare the results of different models.
 
 ### *Embedding Layer*
 
-<img src="https://www.tensorflow.org/images/linear-relationships.png" class="align-center" alt="">  
-Word2Vector concept (used in Embedding Layer) is very important in Natural Language Processing. Each word itself which is converted in the number here doesn't have any meaning for machine. So we need to convert the word to the meaningful thing for machine. The word can be converted to the vector using n-gram. The vector presents relations among words. You can check here
+<img src="https://www.tensorflow.org/images/linear-relationships.png" class="align-center" alt="">
+Image from [TensorFlow](https://www.tensorflow.org/tutorials/word2vec)  
+Word2Vector concept (used in Embedding Layer) is very important in Natural Language Processing. Each word itself which is converted in the number here doesn't have any meaning for machine. So we need to convert the word to the meaningful thing for machine. The word can be converted to the vector using n-gram. The vector presents relations among words. You can check [Embedding Projector](https://projector.tensorflow.org/) of Google visually in E
