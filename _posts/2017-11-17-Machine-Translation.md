@@ -101,10 +101,52 @@ I tested several models to get better accuracy in test dataset. I will present t
 
 <img src="https://www.tensorflow.org/images/linear-relationships.png" class="align-center" alt="">  
 
-*Image from _[TensorFlow](https://www.tensorflow.org/tutorials/word2vec)_*      
+*Image from* ***[TensorFlow](https://www.tensorflow.org/tutorials/word2vec)***      
 
-Word2Vector concept (used in Embedding Layer) is very important in Natural Language Processing. Each word itself which is converted in the number here doesn't have any meaning for machine. So we need to convert the word to the meaningful thing for machine. The word can be converted to the vector using n-gram. The vector presents relations among words. You can check [Embedding Projector](https://projector.tensorflow.org/) of Google visually what it means.
+Word2Vector concept (used in Embedding Layer) is very important in Natural Language Processing. Each word itself which is converted in the number here doesn't have any meaning for machine. So we need to convert the word to the meaningful thing for machine. The word can be converted to the vector using n-gram. The vector presents relations among words. You can check ***[Embedding Projector](https://projector.tensorflow.org/)*** of Google visually what it means.
 
 ### *Bidirectional RNN*
 
-Bidirectional RNN is
+<img src="http://colah.github.io/posts/2015-09-NN-Types-FP/img/RNN-bidirectional.png" class="align-center" alt="">  
+
+*Image from* ***[colah's blog](http://colah.github.io/posts/2015-09-NN-Types-FP/)***  
+
+Bidirectional RNN is basically two RNNs which have normal RNN and reversed RNN. It improves the test accuracy technically by training RNN using reverse sequenced dataset.
+
+```python
+from keras.layers import GRU, Input, Dense, TimeDistributed, Bidirectional, RepeatVector
+from keras.models import Model, Sequential
+from keras.layers import Activation
+from keras.optimizers import Adam
+from keras.losses import sparse_categorical_crossentropy
+from keras.layers.embeddings import Embedding
+
+
+def model_final(input_shape, output_sequence_length, english_vocab_size, french_vocab_size):
+    """
+    Build and train a model that incorporates embedding, encoder-decoder, and bidirectional RNN on x and y
+    :param input_shape: Tuple of input shape
+    :param output_sequence_length: Length of output sequence
+    :param english_vocab_size: Number of unique English words in the dataset
+    :param french_vocab_size: Number of unique French words in the dataset
+    :return: Keras model built, but not trained
+    """
+
+    inputs = Input(shape=input_shape[1:])
+    embed = Embedding(input_dim=english_vocab_size, output_dim=french_vocab_size)(inputs)
+    biGru_1 = Bidirectional(GRU(units=256, dropout=0.25, recurrent_dropout=0.25))(embed)
+    repeatVec = RepeatVector(output_sequence_length)(biGru_1)
+    biGru_2 = Bidirectional(GRU(units=128, return_sequences=True, dropout=0.25, recurrent_dropout=0.25))(repeatVec)
+    outputs = TimeDistributed(Dense(units=french_vocab_size, activation='softmax'))(biGru_2)
+    model = Model(inputs=inputs, outputs=outputs)
+
+    ############################################################################################
+    # Compile
+    ############################################################################################
+
+    learning_rate=0.001
+    model.compile(loss=sparse_categorical_crossentropy,
+                  optimizer=Adam(learning_rate),
+                  metrics=['accuracy'])
+    return model
+```
