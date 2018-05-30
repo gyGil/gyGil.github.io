@@ -111,7 +111,7 @@ Word2Vector concept (used in Embedding Layer) is very important in Natural Langu
 
 *Image from [colah's blog](http://colah.github.io/posts/2015-09-NN-Types-FP/)*  
 
-Bidirectional RNN is basically two RNNs which have normal RNN and reversed RNN. It improves the test accuracy technically by training RNN using reverse sequenced dataset.
+Bidirectional RNN is basically two RNNs which have normal RNN and reversed RNN. It improves the test accuracy technically by training RNN using reverse sequenced dataset. You can find the nice explanation from [Understanding Bidirectional RNN in PyTorch by CeShine Lee](https://towardsdatascience.com/understanding-bidirectional-rnn-in-pytorch-5bd25a5dd66)  
 
 ### *Final Structure*
 
