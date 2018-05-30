@@ -101,7 +101,7 @@ I tested several models to get better accuracy in test dataset. I will present t
 
 <img src="https://www.tensorflow.org/images/linear-relationships.png" class="align-center" alt="">  
 
-*Image from* ***[TensorFlow](https://www.tensorflow.org/tutorials/word2vec)***      
+*Image from [TensorFlow](https://www.tensorflow.org/tutorials/word2vec)*      
 
 Word2Vector concept (used in Embedding Layer) is very important in Natural Language Processing. Each word itself which is converted in the number here doesn't have any meaning for machine. So we need to convert the word to the meaningful thing for machine. The word can be converted to the vector using n-gram. The vector presents relations among words. You can check ***[Embedding Projector](https://projector.tensorflow.org/)*** of Google visually what it means.
 
@@ -109,7 +109,7 @@ Word2Vector concept (used in Embedding Layer) is very important in Natural Langu
 
 <img src="http://colah.github.io/posts/2015-09-NN-Types-FP/img/RNN-bidirectional.png" class="align-center" alt="">  
 
-*Image from* ***[colah's blog](http://colah.github.io/posts/2015-09-NN-Types-FP/)***  
+*Image from [colah's blog](http://colah.github.io/posts/2015-09-NN-Types-FP/)*  
 
 Bidirectional RNN is basically two RNNs which have normal RNN and reversed RNN. It improves the test accuracy technically by training RNN using reverse sequenced dataset.
 
@@ -192,5 +192,5 @@ Bidirectional RNN: GRU 256, 128 units |     O     |     X     | 83.65%
 Bidirectional RNN: GRU 256, 128 units |     O     |   40%     | 82.17%    
 Bidirectional RNN: GRU 256, 128 units |     O     |   25%     | 86.54%           
 
-The best normal RNN is reached over 90% accuracy in 10 epochs. However it didn't improve much accuracy after over 10 epochs because its structure is not complex enough to catch the complexity of data. It reaches pretty good accuracy faster, but it can't achieve very high accuracy because of comparably simpler structure than bidirectional RNN. 
+The best normal RNN is reached over 90% accuracy in 10 epochs. However it didn't improve much accuracy after over 10 epochs because its structure is not complex enough to catch the complexity of data. It reaches pretty good accuracy faster, but it can't achieve very high accuracy because of comparably simpler structure than bidirectional RNN.
 On the other hand, the best bidirectional RNN is reached to 86% in 10 epochs, but it is eventually reached over 97% accuracy after 40 epochs.  
