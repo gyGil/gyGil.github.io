@@ -124,9 +124,9 @@ repeat_vector_3 (RepeatVector)         | (None, 21, 512)          |  0
 bidirectional_6 (Bidirectional)        | (None, 21, 256)          |  492288    
 time_distributed_3 (TimeDististibuted) | (None, 21, 345)          |  88665       
 
-Total params: 1,574,625
-Trainable params: 1,574,625
-Non-trainable params: 0  
+Total params: 1,574,625  
+Trainable params: 1,574,625  
+Non-trainable params: 0    
 
 ```python
 from keras.layers import GRU, Input, Dense, TimeDistributed, Bidirectional, RepeatVector
