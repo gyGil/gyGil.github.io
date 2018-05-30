@@ -115,16 +115,15 @@ Bidirectional RNN is basically two RNNs which have normal RNN and reversed RNN. 
 
 ### *Final Structure*
 
-Layer (type)                 | Output Shape             | Param #   
------------------------------|--------------------------|-----------
-input_3 (InputLayer)         | (None, 21)               |  0         
-embedding_3 (Embedding)      | (None, 21, 345)          |  69000     
-bidirectional_5 (Bidirection | (None, 512)              |  924672    
-repeat_vector_3 (RepeatVecto | (None, 21, 512)          |  0         
-bidirectional_6 (Bidirection | (None, 21, 256)          |  492288    
-time_distributed_3 (TimeDist | (None, 21, 345)          |  88665       
+Layer (type)                           | Output Shape             | Param #   
+---------------------------------------|--------------------------|-----------
+input_3 (InputLayer)                   | (None, 21)               |  0         
+embedding_3 (Embedding)                | (None, 21, 345)          |  69000     
+bidirectional_5 (Bidirectional)        | (None, 512)              |  924672    
+repeat_vector_3 (RepeatVector)         | (None, 21, 512)          |  0         
+bidirectional_6 (Bidirectional)        | (None, 21, 256)          |  492288    
+time_distributed_3 (TimeDististibuted) | (None, 21, 345)          |  88665       
 
-=================================================================++++
 Total params: 1,574,625
 Trainable params: 1,574,625
 Non-trainable params: 0  
