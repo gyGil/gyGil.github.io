@@ -42,11 +42,11 @@ french_sentences = helper.load_data('data/small_vocab_fr')
 The sample of pair English and French sentence are below.
 
 
-small_vocab_en Line 1:  *new jersey is sometimes quiet during autumn , and it is snowy in april.*
-small_vocab_fr Line 1:  *new jersey est parfois calme pendant l' automne , et il est neigeux en avril.*
+small_vocab_en Line 1:  *new jersey is sometimes quiet during autumn , and it is snowy in april .*
+small_vocab_fr Line 1:  *new jersey est parfois calme pendant l' automne , et il est neigeux en avril .*
 
-small_vocab_en Line 2:  *the united states is usually chilly during july , and it is usually freezing in november.*
-small_vocab_fr Line 2: *les états-unis est généralement froid en juillet , et il gèle habituellement en novembre.*
+small_vocab_en Line 2:  *the united states is usually chilly during july , and it is usually freezing in november .*
+small_vocab_fr Line 2: *les états-unis est généralement froid en juillet , et il gèle habituellement en novembre .*
 
 ### *Tokenize and Padding*
 Tokenize the words into ids.
@@ -90,5 +90,14 @@ def pad(x, length=None):
 The below is the results by Tokenizing and Padding.
 
 *The quick brown fox jumps over the lazy dog .*  
-[1 2 4 5 6 7 1 8 9]  -> Tokenizing  
-[1 2 4 5 6 7 1 8 9 0]  -> Padding  
+[1 2 4 5 6 7 1 8 9]  - Tokenizing  
+[1 2 4 5 6 7 1 8 9 0]  - Padding  
+
+## Model
+
+I tested several models to get better accuracy in test dataset. I will present the best model which is bidirectional RNN with GRU and Embedding Layer. RNN with GRU or LSTM is a good neural network model for sequence data like sentence or stock price. Also Embedding layer is one of important concept for Natural Language Processing. At the end, I will compare the results of different models. 
+
+### *Embedding Layer*
+
+<img src="https://www.tensorflow.org/images/linear-relationships.png" class="align-center" alt="">  
+Word2Vector concept (used in Embedding Layer) is very important in Natural Language Processing. Each word itself which is converted in the number here doesn't have any meaning for machine. So we need to convert the word to the meaningful thing for machine. The word can be converted to the vector using n-gram. The vector presents relations among words. You can check here
