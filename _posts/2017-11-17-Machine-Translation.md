@@ -115,25 +115,20 @@ Bidirectional RNN is basically two RNNs which have normal RNN and reversed RNN. 
 
 ### *Final Structure*
 
-_________________________________________________________________
-Layer (type)                 Output Shape              Param #   
-=================================================================
-input_3 (InputLayer)         (None, 21)                0         
-_________________________________________________________________
-embedding_3 (Embedding)      (None, 21, 345)           69000     
-_________________________________________________________________
-bidirectional_5 (Bidirection (None, 512)               924672    
-_________________________________________________________________
-repeat_vector_3 (RepeatVecto (None, 21, 512)           0         
-_________________________________________________________________
-bidirectional_6 (Bidirection (None, 21, 256)           492288    
-_________________________________________________________________
-time_distributed_3 (TimeDist (None, 21, 345)           88665     
-=================================================================
+Layer (type)                 | Output Shape             | Param #   
+-----------------------------|--------------------------|-----------
+input_3 (InputLayer)         | (None, 21)               |  0         
+embedding_3 (Embedding)      | (None, 21, 345)          |  69000     
+bidirectional_5 (Bidirection | (None, 512)              |  924672    
+repeat_vector_3 (RepeatVecto | (None, 21, 512)          |  0         
+bidirectional_6 (Bidirection | (None, 21, 256)          |  492288    
+time_distributed_3 (TimeDist | (None, 21, 345)          |  88665       
+
+=================================================================++++
 Total params: 1,574,625
 Trainable params: 1,574,625
-Non-trainable params: 0
-  
+Non-trainable params: 0  
+
 ```python
 from keras.layers import GRU, Input, Dense, TimeDistributed, Bidirectional, RepeatVector
 from keras.models import Model, Sequential
@@ -171,3 +166,13 @@ def model_final(input_shape, output_sequence_length, english_vocab_size, french_
                   metrics=['accuracy'])
     return model
 ```
+
+## Prediction
+
+Above model's accuracy of validation dataset reached 97.77%.  
+
+The example of prediction:
+
+English: *He saw an old yellow truck*  
+French: *Il a vu un vieux camion jaune*   
+Prediction: ***il a vu un vieux camion jaune <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD>***  
