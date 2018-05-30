@@ -113,6 +113,27 @@ Word2Vector concept (used in Embedding Layer) is very important in Natural Langu
 
 Bidirectional RNN is basically two RNNs which have normal RNN and reversed RNN. It improves the test accuracy technically by training RNN using reverse sequenced dataset.
 
+### *Final Structure*
+
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+input_3 (InputLayer)         (None, 21)                0         
+_________________________________________________________________
+embedding_3 (Embedding)      (None, 21, 345)           69000     
+_________________________________________________________________
+bidirectional_5 (Bidirection (None, 512)               924672    
+_________________________________________________________________
+repeat_vector_3 (RepeatVecto (None, 21, 512)           0         
+_________________________________________________________________
+bidirectional_6 (Bidirection (None, 21, 256)           492288    
+_________________________________________________________________
+time_distributed_3 (TimeDist (None, 21, 345)           88665     
+=================================================================
+Total params: 1,574,625
+Trainable params: 1,574,625
+Non-trainable params: 0
+  
 ```python
 from keras.layers import GRU, Input, Dense, TimeDistributed, Bidirectional, RepeatVector
 from keras.models import Model, Sequential
