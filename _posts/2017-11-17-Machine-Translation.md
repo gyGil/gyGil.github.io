@@ -174,4 +174,23 @@ The example of prediction:
 
 English: *He saw an old yellow truck*  
 French: *Il a vu un vieux camion jaune*   
-Prediction: ***il a vu un vieux camion jaune <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD>***  
+Prediction: **il a vu un vieux camion jaune <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD> <PAD>**
+
+## Comparison
+
+The condition of training for all model:  
+10 epochs, learning rate = 0.001  
+
+
+Structure                             | Embedding | Dropout   | Maximum Accuracy               
+--------------------------------------|-----------|-----------|------------------
+RNN: GRU 100 units                    |     X     |     X     | 65.10%                      
+RNN: GRU 256 units                    |     X     |     X     | 68.30%              
+RNN: GRU 100 units                    |     O     |     X     | 84.01%                 
+RNN: GRU 256 units                    |     O     |     X     | 92.06%               
+Bidirectional RNN: GRU 256, 128 units |     O     |     X     | 83.65%              
+Bidirectional RNN: GRU 256, 128 units |     O     |   40%     | 82.17%    
+Bidirectional RNN: GRU 256, 128 units |     O     |   25%     | 86.54%           
+
+The best normal RNN is reached over 90% accuracy in 10 epochs. However it didn't improve much accuracy after over 10 epochs because its structure is not complex enough to catch the complexity of data. It reaches pretty good accuracy faster, but it can't achieve very high accuracy because of comparably simpler structure than bidirectional RNN. 
+On the other hand, the best bidirectional RNN is reached to 86% in 10 epochs, but it is eventually reached over 97% accuracy after 40 epochs.  
