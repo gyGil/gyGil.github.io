@@ -230,7 +230,109 @@ print('Test accuracy: %.4f%%' % test_accuracy)
 Test accuracy: 6.1005%  
 
 ## Step 4: Create a CNN to Classify Dog Breeds with VGG-16 (using Transfer Learning)
+I used Transfer Learning with VGG-16 and a dense layer to train model faster and get better accuracy.
+
+Layer (type)                           | Output Shape             | Param #   
+---------------------------------------|--------------------------|-----------
+global_average_pooling2d_5             | (None, 512)              |  0          
+dense_6 (Dense)                        | (None, 133)              |  68229       
+
+Total params: 68,229  
+Trainable params: 68,229  
+Non-trainable params: 0  
+
+### Train the model
+```python
+bottleneck_features = np.load('bottleneck_features/DogVGG16Data.npz')
+train_VGG16 = bottleneck_features['train']
+valid_VGG16 = bottleneck_features['valid']
+test_VGG16 = bottleneck_features['test']
+
+VGG16_model = Sequential()
+VGG16_model.add(GlobalAveragePooling2D(input_shape=train_VGG16.shape[1:]))
+VGG16_model.add(Dense(133, activation='softmax'))
+
+VGG16_model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
+
+checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.VGG16.hdf5',
+                               verbose=1, save_best_only=True)
+
+# Train model
+VGG16_model.fit(train_VGG16, train_targets,
+          validation_data=(valid_VGG16, valid_targets),
+          epochs=20, batch_size=20, callbacks=[checkpointer], verbose=1)
+```
+Epoch 20/20 loss: 8.2550 - acc: 0.4740 - val_loss: 8.6555 - val_acc: 0.4012  
+
+### Test the model
+```python
+VGG16_model.load_weights('saved_models/weights.best.VGG16.hdf5')
+
+# get index of predicted dog breed for each image in test set
+VGG16_predictions = [np.argmax(VGG16_model.predict(np.expand_dims(feature, axis=0))) for feature in test_VGG16]
+
+# report test accuracy
+test_accuracy = 100*np.sum(np.array(VGG16_predictions)==np.argmax(test_targets, axis=1))/len(VGG16_predictions)
+print('Test accuracy: %.4f%%' % test_accuracy)
+```
+Test accuracy: 39.9522%  
+
 ## Step 5: Create a CNN to Classify Dog Breeds with VGG-19 (using Transfer Learning)
+I used Transfer Learning with VGG-19 and 2 dense layers to get better accuracy than above models.
+
+Layer (type)                           | Output Shape             | Param #   
+---------------------------------------|--------------------------|-----------
+global_average_pooling2d_6             | (None, 512)              |  0          
+dense_7 (Dense)                        | (None, 50)               |  25650        
+dense_8 (Dense)                        | (None, 133)              |  6783  
+
+Total params: 32,433  
+Trainable params: 32,433  
+Non-trainable params: 0  
+
+### Train the model
+```python
+bottleneck_features = np.load('bottleneck_features/DogVGG19Data.npz')
+train_VGG19 = bottleneck_features['train']
+valid_VGG19 = bottleneck_features['valid']
+test_VGG19 = bottleneck_features['test']
+
+VGG19_model = Sequential()
+VGG19_model.add(GlobalAveragePooling2D(input_shape = train_VGG19.shape[1:]))
+VGG19_model.add(Dense(50))
+VGG19_model.add(Dense(133, activation='softmax'))
+
+# Train model
+checkpointer = ModelCheckpoint(filepath='saved_models/weights.bet.VGG19.hdf5',
+                              verbose = 1, save_best_only=True)
+
+VGG19_model.fit(train_VGG19, train_targets,
+               validation_data=(valid_VGG19, valid_targets),
+               epochs=40, batch_size=20, callbacks=[checkpointer], verbose = 1)
+```
+Epoch 20/40 loss: 0.0616 - acc: 0.9832 - val_loss: 1.6689 - val_acc: 0.7257     
+
+### Test the model
+```python
+VGG19_model.load_weights('saved_models/weights.bet.VGG19.hdf5')
+
+VGG19_predictions = [np.argmax(VGG19_model.predict(np.expand_dims(feature, axis=0))) for feature in test_VGG19]
+
+test_accuracy = 100 * np.sum(np.array(VGG19_predictions)==np.argmax(test_targets, axis=1))/len(VGG19_predictions)
+print('Test accuracy: %.4f%%' % test_accuracy)
+```
+Test accuracy: 72.2488%  
+
 ## Step 6: Compare above 3 models
+The condition of training for all model:  
+20 epochs, learning rate  
+
+Structure      |    # Dense Layer   | Transfer Learning  | Test Accuracy               
+---------------|--------------------|--------------------|---------------
+CNN: 3 Layers  |  1 (133 units)     |          X         | 6.10%                      
+CNN: VGG-16    |  1 ()     |     X     | 68.30%              
+CNN: VGG-19    |     O     |     X     | 84.01%                 
+
+
 ## Reference
 [1] Artificial Intelligence. (n.d.). Retrieved from https://www.udacity.com/course/ai-artificial-intelligence-nanodegree--nd898
