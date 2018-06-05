@@ -333,6 +333,9 @@ CNN: 3 Layers  |  1 (133 units)     |          X         | 6.10%
 CNN: VGG-16    |  1 (133 units)     |          O         | 39.95%              
 CNN: VGG-19    |  2 (50, 133 units) |          O         | 72.24%                 
 
+As you see, we can improve accuracy and reduce the training time a lot with Transfer Learning. Also VGG-19 has the better result than VGG-16 with 2 dense layers. VGG-19 has more stacked layers with more filters. It means it has more representation power than VGG-16 normally. Which means it can have better accuracy too. However, when we train more stacked CNN from scratch, it spends more memory, computation power, and time.  
+Also, we can figure out that we put 2 dense layers at the end of model, it leads to better accuracy than 1 dense layer.  
+
 ## Outcome
 
 ```python
@@ -367,6 +370,10 @@ You look like Dachshund
 Hi, Dog!  
  [dog 4](/images/dog6.png)
 You look like English_toy_spaniel  
+
+
+
+Source Code:
 
 ## Reference
 [1] Artificial Intelligence. (n.d.). Retrieved from https://www.udacity.com/course/ai-artificial-intelligence-nanodegree--nd898
