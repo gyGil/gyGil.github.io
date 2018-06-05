@@ -13,13 +13,13 @@ tags:
 
 ## Introduction
 This project is for identifying canine breed given an image of a dog. If supplied an image of a human, the program will identify the resembling dog breed.
-I implemented CNNs using transfer learning with VGG-19 to classify dog breed.
+I implemented CNN using not transfer learning and CNNs using transfer learning with VGG-16, VGG-19 to classify dog breed. At the end of this post, I will compare 3 models for performance.
 
 ## Process
 * Step 0: Import Datasets
 * Step 1: Detect Humans
 * Step 2: Detect Dogs with ResNet-50
-* Step 3: Create a CNN to Classify Dog Breeds
+* Step 3: Create a CNN to Classify Dog Breeds (from Scratch)
 * Step 4: Create a CNN to Classify Dog Breeds with VGG-16 (using Transfer Learning)
 * Step 5: Create a CNN to Classify Dog Breeds with VGG-19 (using Transfer Learning)
 * Step 6: Compare above 3 models
@@ -108,7 +108,7 @@ def paths_to_tensor(img_paths):
 ```
 
 ### Dog detector
-It makes the prediction using resnet50. If a image is classified between 151 to 268 using ResNet50, it means it is a dog image.
+It makes the prediction using resnet50. If a image is classified between 151 to 268 using ResNet50, it is a dog image.
 
 ```python
 from keras.applications.resnet50 import preprocess_input, decode_predictions
@@ -143,7 +143,67 @@ def dog_detector(img_path):
     return ((prediction <= 268) & (prediction >= 151))
 ```
 
-## Step 3: Create a CNN to Classify Dog Breeds
+## Step 3: Create a CNN to Classify Dog Breeds (from Scratch)
+I will build a simple 3 layers of CNN with a dense layer from beginning without Transfer Learning for test purpose. Building CNN from the start requires a lot of dataset and training time. It is demonstration to show the weakness of building CNN from scratch compare to Transfer Learning.
+
+pre-process the data.
+```python
+from PIL import ImageFile                            
+ImageFile.LOAD_TRUNCATED_IMAGES = True                 
+
+# pre-process the data for Keras
+train_tensors = paths_to_tensor(train_files).astype('float32')/255
+valid_tensors = paths_to_tensor(valid_files).astype('float32')/255
+test_tensors = paths_to_tensor(test_files).astype('float32')/255
+```
+
+Build model.
+
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_4 (Conv2D)            (None, 224, 224, 16)      208       
+_________________________________________________________________
+max_pooling2d_6 (MaxPooling2 (None, 112, 112, 16)      0         
+_________________________________________________________________
+conv2d_5 (Conv2D)            (None, 112, 112, 32)      2080      
+_________________________________________________________________
+max_pooling2d_7 (MaxPooling2 (None, 56, 56, 32)        0         
+_________________________________________________________________
+conv2d_6 (Conv2D)            (None, 56, 56, 64)        8256      
+_________________________________________________________________
+max_pooling2d_8 (MaxPooling2 (None, 28, 28, 64)        0         
+_________________________________________________________________
+global_average_pooling2d_4 ( (None, 64)                0         
+_________________________________________________________________
+dense_5 (Dense)              (None, 133)               8645      
+=================================================================
+Total params: 19,189
+Trainable params: 19,189
+Non-trainable params: 0
+
+```python
+from keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D
+from keras.layers import Dropout, Flatten, Dense
+from keras.models import Sequential
+
+model = Sequential()
+
+model.add(Conv2D(filters=16, kernel_size=2, padding='same',
+                        activation='relu', input_shape=(224,224,3)))
+model.add(MaxPooling2D(pool_size=2))
+model.add(Conv2D(filters=32, kernel_size=2, padding='same',
+                        activation='relu'))
+model.add(MaxPooling2D(pool_size=2))
+model.add(Conv2D(filters=64, kernel_size=2, padding='same',
+                        activation='relu'))
+model.add(MaxPooling2D(pool_size=2))
+
+# https://keras.io/layers/pooling/
+model.add(GlobalAveragePooling2D())
+model.add(Dense(133,activation='softmax'))
+```
+
 ## Step 4: Create a CNN to Classify Dog Breeds with VGG-16 (using Transfer Learning)
 ## Step 5: Create a CNN to Classify Dog Breeds with VGG-19 (using Transfer Learning)
 ## Step 6: Compare above 3 models
