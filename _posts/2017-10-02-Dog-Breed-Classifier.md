@@ -146,7 +146,7 @@ def dog_detector(img_path):
 ## Step 3: Create a CNN to Classify Dog Breeds (from Scratch)
 I will build a simple 3 layers of CNN with a dense layer from beginning without Transfer Learning for test purpose. Building CNN from the start requires a lot of dataset and training time. It is demonstration to show the weakness of building CNN from scratch compare to Transfer Learning.
 
-pre-process the data.
+### pre-process the data.
 ```python
 from PIL import ImageFile                            
 ImageFile.LOAD_TRUNCATED_IMAGES = True                 
@@ -157,30 +157,23 @@ valid_tensors = paths_to_tensor(valid_files).astype('float32')/255
 test_tensors = paths_to_tensor(test_files).astype('float32')/255
 ```
 
-Build model.
+### Build model.
 
-_________________________________________________________________
-Layer (type)                 Output Shape              Param #   
-=================================================================
-conv2d_4 (Conv2D)            (None, 224, 224, 16)      208       
-_________________________________________________________________
-max_pooling2d_6 (MaxPooling2 (None, 112, 112, 16)      0         
-_________________________________________________________________
-conv2d_5 (Conv2D)            (None, 112, 112, 32)      2080      
-_________________________________________________________________
-max_pooling2d_7 (MaxPooling2 (None, 56, 56, 32)        0         
-_________________________________________________________________
-conv2d_6 (Conv2D)            (None, 56, 56, 64)        8256      
-_________________________________________________________________
-max_pooling2d_8 (MaxPooling2 (None, 28, 28, 64)        0         
-_________________________________________________________________
-global_average_pooling2d_4 ( (None, 64)                0         
-_________________________________________________________________
-dense_5 (Dense)              (None, 133)               8645      
-=================================================================
-Total params: 19,189
-Trainable params: 19,189
-Non-trainable params: 0
+Layer (type)                           | Output Shape             | Param #   
+---------------------------------------|--------------------------|-----------
+conv2d_4 (Conv2D)                      | (None, 224, 224, 16)     |  208          
+max_pooling2d_6 (MaxPooling2           | (None, 112, 112, 16)     |  0       
+conv2d_5 (Conv2D)                      | (None, 112, 112, 32)     |  2080      
+max_pooling2d_7 (MaxPooling2           | (None, 56, 56, 32)       |  0   
+conv2d_6 (Conv2D)                      | (None, 56, 56, 64)       |  8256  
+max_pooling2d_8 (MaxPooling2           | (None, 28, 28, 64)       |  0
+global_average_pooling2d_4 (           | (None, 64)               |  0
+dense_5 (Dense)                        | (None, 133)              |  8645         
+
+
+Total params: 19,189  
+Trainable params: 19,189  
+Non-trainable params: 0  
 
 ```python
 from keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D
@@ -202,6 +195,24 @@ model.add(MaxPooling2D(pool_size=2))
 # https://keras.io/layers/pooling/
 model.add(GlobalAveragePooling2D())
 model.add(Dense(133,activation='softmax'))
+```
+
+### Train models
+```python
+model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
+
+from keras.callbacks import ModelCheckpoint  
+
+epochs = 20
+
+### Do NOT modify the code below this line.
+
+checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.from_scratch.hdf5',
+                               verbose=1, save_best_only=True)
+
+model.fit(train_tensors, train_targets,
+          validation_data=(valid_tensors, valid_targets),
+          epochs=epochs, batch_size=20, callbacks=[checkpointer], verbose=1)
 ```
 
 ## Step 4: Create a CNN to Classify Dog Breeds with VGG-16 (using Transfer Learning)
