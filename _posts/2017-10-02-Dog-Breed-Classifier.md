@@ -6,29 +6,59 @@ categories:
   - Visual Recognition
 tags:
   - CNN
+  - Transfer Learning
   - Keras
   - TensorFlow
 ---
 
 ## Introduction
-This project is for translating English sentence to French sentence.
-I built a deep neural network(bidirectional RNN with GRU units) as part of end-to-end machine translation pipeline. The completed pipeline will accept English text as input and return the French translation. I compared the results of various RNN structures at the end.
-
-This project is for identifying canine breed given an image of a dog.
+This project is for identifying canine breed given an image of a dog. If supplied an image of a human, the program will identify the resembling dog breed.
 I implemented CNNs using transfer learning with VGG-19 to classify dog breed.
 
 ## Process
-* Preprocess - Convert text to sequence of integers
-* Models - Created bidirectional RNN with GRU units which accepts a sequence of integers as input and returns a probability distribution over possible translations
-* Prediction - Run the model on English text.
+* Step 0: Import Datasets
+* Step 1: Detect Humans
+* Step 2: Detect Dogs
+* Step 3: Create a CNN to Classify Dog Breeds
+* Step 4: Use a CNN to Classify Dog Breeds (using Transfer Learning)
+* Step 5: Create a CNN to Classify Dog Breeds (using Transfer Learning)
+* Step 6: Test
 
 ## Environment
 * AWS EC2 p2.xlarge
 * Jupyter Notebook
 * Python 3.5, Keras, TensorFlow 1.1
 
-## Preprocessing dataset
-The most common datasets used for machine translation are from [WMT](https://http://www.statmt.org/). However, that will take a long time to train a neural network on. So, I used comparably the small dataset for my project's purpose.
+## Import Datasets
+Import Dog dataset and divide into train, validation, and test datasets. Dog images is composed of 8351 images which are categorized into 133 breeds.
+```python
+from sklearn.datasets import load_files       
+from keras.utils import np_utils
+import numpy as np
+from glob import glob
+
+# define function to load train, test, and validation datasets
+def load_dataset(path):
+    data = load_files(path)
+    dog_files = np.array(data['filenames'])
+    dog_targets = np_utils.to_categorical(np.array(data['target']), 133)
+    return dog_files, dog_targets
+
+# load train, test, and validation datasets
+train_files, train_targets = load_dataset('dogImages/train')
+valid_files, valid_targets = load_dataset('dogImages/valid')
+test_files, test_targets = load_dataset('dogImages/test')
+```
+
+Import 13233 human images.  
+```python
+import random
+random.seed(8675309)
+
+# load filenames in shuffled human dataset
+human_files = np.array(glob("lfw/*/*"))
+random.shuffle(human_files)
+```
 
 ### *Load Data*
 English and French Data are loaded. The both datasets are sequenced already.
