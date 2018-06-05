@@ -144,7 +144,7 @@ def dog_detector(img_path):
 ```
 
 ## Step 3: Create a CNN to Classify Dog Breeds (from Scratch)
-I will build a simple 3 layers of CNN with a dense layer from beginning without Transfer Learning for test purpose. Building CNN from the start requires a lot of dataset and training time. It is demonstration to show the weakness of building CNN from scratch compare to Transfer Learning.
+I will build a simple 3 layers of CNN with a dense layer from beginning without Transfer Learning for comparison purpose. Building CNN from the start requires a lot of dataset and training time. It is demonstration to show the weakness of building CNN from scratch compare to Transfer Learning.
 
 ### pre-process the data.
 ```python
@@ -197,7 +197,7 @@ model.add(GlobalAveragePooling2D())
 model.add(Dense(133,activation='softmax'))
 ```
 
-### Train models
+### Train model
 ```python
 model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
