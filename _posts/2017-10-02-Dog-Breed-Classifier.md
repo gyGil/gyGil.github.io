@@ -18,19 +18,19 @@ I implemented CNNs using transfer learning with VGG-19 to classify dog breed.
 ## Process
 * Step 0: Import Datasets
 * Step 1: Detect Humans
-* Step 2: Detect Dogs
+* Step 2: Detect Dogs with ResNet-50
 * Step 3: Create a CNN to Classify Dog Breeds
-* Step 4: Use a CNN to Classify Dog Breeds (using Transfer Learning)
-* Step 5: Create a CNN to Classify Dog Breeds (using Transfer Learning)
-* Step 6: Test
+* Step 4: Create a CNN to Classify Dog Breeds with VGG-16 (using Transfer Learning)
+* Step 5: Create a CNN to Classify Dog Breeds with VGG-19 (using Transfer Learning)
+* Step 6: Compare above 3 models
 
 ## Environment
 * AWS EC2 p2.xlarge
 * Jupyter Notebook
 * Python 3.5, Keras, TensorFlow 1.1
 
-## Import Datasets
-Import Dog dataset and divide into train, validation, and test datasets. Dog images is composed of 8351 images which are categorized into 133 breeds.
+## Step 0: Import Datasets
+Import Dog dataset and divide into train, validation, and test datasets. Dog images is composed of 8,351 images which are categorized into 133 breeds.
 ```python
 from sklearn.datasets import load_files       
 from keras.utils import np_utils
@@ -50,7 +50,7 @@ valid_files, valid_targets = load_dataset('dogImages/valid')
 test_files, test_targets = load_dataset('dogImages/test')
 ```
 
-Import 13233 human images.  
+Import 13,233 human images.  
 ```python
 import random
 random.seed(8675309)
@@ -60,172 +60,92 @@ human_files = np.array(glob("lfw/*/*"))
 random.shuffle(human_files)
 ```
 
-### *Load Data*
-English and French Data are loaded. The both datasets are sequenced already.
-```python
-import helper
-
-# Load English data
-english_sentences = helper.load_data('data/small_vocab_en')
-# Load French data
-french_sentences = helper.load_data('data/small_vocab_fr')
-```
-The sample of pair English and French sentence are below.
-
-
-small_vocab_en Line 1:  *new jersey is sometimes quiet during autumn , and it is snowy in april .*
-small_vocab_fr Line 1:  *new jersey est parfois calme pendant l' automne , et il est neigeux en avril .*
-
-small_vocab_en Line 2:  *the united states is usually chilly during july , and it is usually freezing in november .*
-small_vocab_fr Line 2: *les états-unis est généralement froid en juillet , et il gèle habituellement en novembre .*
-
-### *Tokenize and Padding*
-Tokenize the words into ids.
+## Step 1: Detect Humans
+I used [Haar feature-based cascade classifiers](https://docs.opencv.org/trunk/d7/d8b/tutorial_py_face_detection.html) to detect human faces in images. OpenCV provides many pre-trained face detectors, stored as XML files on [github](https://github.com/opencv/opencv/tree/master/data/haarcascades).
 
 ```python
-import project_tests as tests
-from keras.preprocessing.text import Tokenizer
+import cv2    
 
+# extract pre-trained face detector
+face_cascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_alt.xml')
 
-def tokenize(x):
-    """
-    Tokenize x
-    :param x: List of sentences/strings to be tokenized
-    :return: Tuple of (tokenized x data, tokenizer used to tokenize x)
-    """
-    # TODO: Implement
-    tokenizer = Tokenizer()
-    tokenizer.fit_on_texts(x)
+# returns "True" if face is detected in image stored at img_path
+def face_detector(img_path):
+    img = cv2.imread(img_path)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray)
 
-    return tokenizer.texts_to_sequences(x), tokenizer
+    return len(faces) > 0
 ```
 
-Add padding to make all the sequences the same length.
+## Step 2: Detect Dogs with ResNet-50
+I used a pre-trained ResNet-50 model to detect dogs in images.
+```python
+from keras.applications.resnet50 import ResNet50
+
+# define ResNet50 model
+ResNet50_model = ResNet50(weights='imagenet')
+```
+
+### Pre-process the data
+When using TensorFlow as backend, Keras CNNs require a 4D array as input, with shape
+**(nb_samples,rows,columns,channels)**  
+```python
+from keras.preprocessing import image                  
+from tqdm import tqdm
+
+def path_to_tensor(img_path):
+    # loads RGB image as PIL.Image.Image type
+    img = image.load_img(img_path, target_size=(224, 224))
+    # convert PIL.Image.Image type to 3D tensor with shape (224, 224, 3)
+    x = image.img_to_array(img)
+    # convert 3D tensor to 4D tensor with shape (1, 224, 224, 3) and return 4D tensor
+    return np.expand_dims(x, axis=0)
+
+def paths_to_tensor(img_paths):
+    list_of_tensors = [path_to_tensor(img_path) for img_path in tqdm(img_paths)]
+    return np.vstack(list_of_tensors)
+```
+
+### Dog detector
+It makes the prediction using resnet50. If a image is classified between 151 to 268 using ResNet50, it means it is a dog image.
 
 ```python
-import numpy as np
-from keras.preprocessing.sequence import pad_sequences
+from keras.applications.resnet50 import preprocess_input, decode_predictions
+from keras.preprocessing import image                  
+from tqdm import tqdm
 
+def ResNet50_predict_labels(img_path):
+    # returns prediction vector for image located at img_path
+    img = preprocess_input(path_to_tensor(img_path))
+    return np.argmax(ResNet50_model.predict(img))
 
-def pad(x, length=None):
-    """
-    Pad x
-    :param x: List of sequences.
-    :param length: Length to pad the sequence to.  If None, use length of longest sequence in x.
-    :return: Padded numpy array of sequences
-    """
-    # TODO: Implement
-    return pad_sequences(x, maxlen=length, padding='post', truncating='post')
+def path_to_tensor(img_path):
+    # loads RGB image as PIL.Image.Image type
+    img = image.load_img(img_path, target_size=(224, 224))
+    # convert PIL.Image.Image type to 3D tensor with shape (224, 224, 3)
+    x = image.img_to_array(img)
+    # convert 3D tensor to 4D tensor with shape (1, 224, 224, 3) and return 4D tensor
+    return np.expand_dims(x, axis=0)
+
+def paths_to_tensor(img_paths):
+    list_of_tensors = [path_to_tensor(img_path) for img_path in tqdm(img_paths)]
+    return np.vstack(list_of_tensors)
+
+def ResNet50_predict_labels(img_path):
+    # returns prediction vector for image located at img_path
+    img = preprocess_input(path_to_tensor(img_path))
+    return np.argmax(ResNet50_model.predict(img))
+
+### returns "True" if a dog is detected in the image stored at img_path
+def dog_detector(img_path):
+    prediction = ResNet50_predict_labels(img_path)
+    return ((prediction <= 268) & (prediction >= 151))
 ```
 
-The below is the results by Tokenizing and Padding.
-
-*The quick brown fox jumps over the lazy dog .*  
-[1 2 4 5 6 7 1 8 9]  - Tokenizing  
-[1 2 4 5 6 7 1 8 9 0]  - Padding  
-
-## Model
-
-I tested several models to get better accuracy in test dataset. I will present the best model which is bidirectional RNN with GRU and Embedding Layer. RNN with GRU or LSTM is a good neural network model for sequence data like sentence or stock price. Also Embedding layer is one of important concept for Natural Language Processing. At the end, I will compare the results of different models.
-
-### *Embedding Layer*
-
-<img src="https://www.tensorflow.org/images/linear-relationships.png" class="align-center" alt="">  
-
-*Image from [TensorFlow](https://www.tensorflow.org/tutorials/word2vec)*      
-
-Word2Vector concept (used in Embedding Layer) is very important in Natural Language Processing. Each word itself which is converted in the number here doesn't have any meaning for machine. So we need to convert the word to the meaningful thing for machine. The word can be converted to the vector using n-gram. The vector presents relations among words. You can check ***[Embedding Projector](https://projector.tensorflow.org/)*** of Google visually what it means.
-
-### *Bidirectional RNN*
-
-<img src="http://colah.github.io/posts/2015-09-NN-Types-FP/img/RNN-bidirectional.png" class="align-center" alt="">  
-
-*Image from [colah's blog](http://colah.github.io/posts/2015-09-NN-Types-FP/)*  
-
-Bidirectional RNN is basically two RNNs which have normal RNN and reversed RNN. It improves the test accuracy technically by training RNN using reverse sequenced dataset. You can find the nice explanation from ***[Understanding Bidirectional RNN in PyTorch by CeShine Lee](https://towardsdatascience.com/understanding-bidirectional-rnn-in-pytorch-5bd25a5dd66)***  
-
-### *Final Structure*
-
-Layer (type)                           | Output Shape             | Param #   
----------------------------------------|--------------------------|-----------
-input_3 (InputLayer)                   | (None, 21)               |  0         
-embedding_3 (Embedding)                | (None, 21, 345)          |  69000     
-bidirectional_5 (Bidirectional)        | (None, 512)              |  924672    
-repeat_vector_3 (RepeatVector)         | (None, 21, 512)          |  0         
-bidirectional_6 (Bidirectional)        | (None, 21, 256)          |  492288    
-time_distributed_3 (TimeDististibuted) | (None, 21, 345)          |  88665       
-
-Total params: 1,574,625  
-Trainable params: 1,574,625  
-Non-trainable params: 0    
-
-```python
-from keras.layers import GRU, Input, Dense, TimeDistributed, Bidirectional, RepeatVector
-from keras.models import Model, Sequential
-from keras.layers import Activation
-from keras.optimizers import Adam
-from keras.losses import sparse_categorical_crossentropy
-from keras.layers.embeddings import Embedding
-
-
-def model_final(input_shape, output_sequence_length, english_vocab_size, french_vocab_size):
-    """
-    Build and train a model that incorporates embedding, encoder-decoder, and bidirectional RNN on x and y
-    :param input_shape: Tuple of input shape
-    :param output_sequence_length: Length of output sequence
-    :param english_vocab_size: Number of unique English words in the dataset
-    :param french_vocab_size: Number of unique French words in the dataset
-    :return: Keras model built, but not trained
-    """
-
-    inputs = Input(shape=input_shape[1:])
-    embed = Embedding(input_dim=english_vocab_size, output_dim=french_vocab_size)(inputs)
-    biGru_1 = Bidirectional(GRU(units=256, dropout=0.25, recurrent_dropout=0.25))(embed)
-    repeatVec = RepeatVector(output_sequence_length)(biGru_1)
-    biGru_2 = Bidirectional(GRU(units=128, return_sequences=True, dropout=0.25, recurrent_dropout=0.25))(repeatVec)
-    outputs = TimeDistributed(Dense(units=french_vocab_size, activation='softmax'))(biGru_2)
-    model = Model(inputs=inputs, outputs=outputs)
-
-    ############################################################################################
-    # Compile
-    ############################################################################################
-
-    learning_rate=0.001
-    model.compile(loss=sparse_categorical_crossentropy,
-                  optimizer=Adam(learning_rate),
-                  metrics=['accuracy'])
-    return model
-```
-
-## Prediction
-
-Above model's accuracy of validation dataset reached 97.77%.  
-
-The example of prediction:
-
-English: *He saw an old yellow truck*  
-French: *Il a vu un vieux camion jaune*   
-Prediction: ***il a vu un vieux camion jaune \<PAD\> \<PAD\> \<PAD\> \<PAD\> \<PAD\> \<PAD\> \<PAD\> \<PAD\> \<PAD\> \<PAD\> \<PAD\> \<PAD\> \<PAD\> \<PAD\>***
-
-## Comparison
-
-The condition of training for all model:  
-10 epochs, learning rate = 0.001  
-
-
-Structure                             | Embedding | Dropout   | Maximum Accuracy               
---------------------------------------|-----------|-----------|------------------
-RNN: GRU 100 units                    |     X     |     X     | 65.10%                      
-RNN: GRU 256 units                    |     X     |     X     | 68.30%              
-RNN: GRU 100 units                    |     O     |     X     | 84.01%                 
-RNN: GRU 256 units                    |     O     |     X     | 92.06%               
-Bidirectional RNN: GRU 256, 128 units |     O     |     X     | 83.65%              
-Bidirectional RNN: GRU 256, 128 units |     O     |   40%     | 82.17%    
-Bidirectional RNN: GRU 256, 128 units |     O     |   25%     | 86.54%           
-
-The best normal RNN is reached over 90% accuracy in 10 epochs. However it didn't improve much accuracy after over 10 epochs because its structure is not complex enough to catch the complexity of data. It reaches pretty good accuracy faster, but it can't achieve very high accuracy because of comparably simpler structure than bidirectional RNN.
-On the other hand, the best bidirectional RNN is reached to 86% in 10 epochs, but it is eventually reached over 97% accuracy after 40 epochs.  
-Source Code: https://github.com/gyGil   
-
+## Step 3: Create a CNN to Classify Dog Breeds
+## Step 4: Create a CNN to Classify Dog Breeds with VGG-16 (using Transfer Learning)
+## Step 5: Create a CNN to Classify Dog Breeds with VGG-19 (using Transfer Learning)
+## Step 6: Compare above 3 models
 ## Reference
 [1] Artificial Intelligence. (n.d.). Retrieved from https://www.udacity.com/course/ai-artificial-intelligence-nanodegree--nd898
