@@ -330,9 +330,43 @@ The condition of training for all model:
 Structure      |    # Dense Layer   | Transfer Learning  | Test Accuracy               
 ---------------|--------------------|--------------------|---------------
 CNN: 3 Layers  |  1 (133 units)     |          X         | 6.10%                      
-CNN: VGG-16    |  1 ()     |     X     | 68.30%              
-CNN: VGG-19    |     O     |     X     | 84.01%                 
+CNN: VGG-16    |  1 (133 units)     |          O         | 39.95%              
+CNN: VGG-19    |  2 (50, 133 units) |          O         | 72.24%                 
 
+## Outcome
+
+```python
+dog_human_detector("images/man-852762_960_720.jpg")
+dog_human_detector("images/GettyImages-694355292-1503877610-640x426.jpg")
+dog_human_detector("images/Taka_Shiba.jpg")
+dog_human_detector("images/eebabf5825e8247d99ac2cd118db840ff31d7bfa_hq.jpg")
+dog_human_detector("images/hotdog-taco-dog-today-161029-tease_845d920c7ea63371a9bf48203d22036f.jpg")
+dog_human_detector("images/dog-human-hybrid-woman.jpeg")
+```
+
+Hello, human!  
+[human 1](/images/dog1.png)
+You look like Cairn_terrier  
+
+Hello, human!  
+[human 2](/images/dog2.png)
+You look like German_shepherd_dog  
+
+Hello, human!  
+[dog 1](/images/dog3.png)
+You look like Akita  
+
+Hi, Dog!    
+[dog 2](/images/dog4.png)
+You look like Bull_terrier  
+
+Hi, Dog!  
+ [dog 3](/images/dog5.png)
+You look like Dachshund  
+
+Hi, Dog!  
+ [dog 4](/images/dog6.png)
+You look like English_toy_spaniel  
 
 ## Reference
 [1] Artificial Intelligence. (n.d.). Retrieved from https://www.udacity.com/course/ai-artificial-intelligence-nanodegree--nd898
