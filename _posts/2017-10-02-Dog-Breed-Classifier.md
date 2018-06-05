@@ -348,32 +348,32 @@ dog_human_detector("images/dog-human-hybrid-woman.jpeg")
 ```
 
 Hello, human!  
-[human 1](/images/dog1.png)
+![human 1](/images/dog1.png)
 You look like Cairn_terrier  
 
 Hello, human!  
-[human 2](/images/dog2.png)
+![human 2](/images/dog2.png)
 You look like German_shepherd_dog  
 
 Hello, human!  
-[dog 1](/images/dog3.png)
+![dog 1](/images/dog3.png)
 You look like Akita  
 
 Hi, Dog!    
-[dog 2](/images/dog4.png)
+![dog 2](/images/dog4.png)
 You look like Bull_terrier  
 
 Hi, Dog!  
- [dog 3](/images/dog5.png)
+![dog 3](/images/dog5.png)
 You look like Dachshund  
 
 Hi, Dog!  
- [dog 4](/images/dog6.png)
+![dog 4](/images/dog6.png)
 You look like English_toy_spaniel  
 
 
 
-Source Code: https://github.com/gyGil/Dog-Breed-Classifier
+Source Code: https://github.com/gyGil/Dog-Breed-Classifier  
 
 ## Reference
 [1] Artificial Intelligence. (n.d.). Retrieved from https://www.udacity.com/course/ai-artificial-intelligence-nanodegree--nd898
