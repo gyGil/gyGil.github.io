@@ -194,7 +194,7 @@ Bidirectional RNN: GRU 256, 128 units |     O     |   25%     | 86.54%
 
 The best normal RNN is reached over 90% accuracy in 10 epochs. However it didn't improve much accuracy after over 10 epochs because its structure is not complex enough to catch the complexity of data. It reaches pretty good accuracy faster, but it can't achieve very high accuracy because of comparably simpler structure than bidirectional RNN.
 On the other hand, the best bidirectional RNN is reached to 86% in 10 epochs, but it is eventually reached over 97% accuracy after 40 epochs.  
-Source Code: https://github.com/gyGil   
+[Source Code](https://github.com/gyGil)  
 
 ## Reference
 [1] Artificial Intelligence. (n.d.). Retrieved from https://www.udacity.com/course/ai-artificial-intelligence-nanodegree--nd898

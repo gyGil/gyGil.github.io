@@ -373,7 +373,7 @@ You look like English_toy_spaniel
 
 
 
-Source Code: https://github.com/gyGil/Dog-Breed-Classifier  
+[Source Code](https://github.com/gyGil/Dog-Breed-Classifier)  
 
 ## Reference
 [1] Artificial Intelligence. (n.d.). Retrieved from https://www.udacity.com/course/ai-artificial-intelligence-nanodegree--nd898
