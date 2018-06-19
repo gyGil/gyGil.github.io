@@ -142,18 +142,12 @@ hist = model.fit(X_train, y_train, batch_size=16, epochs=3000, verbose=2,  callb
 
 model.save('my_model.h5')
 ```
-
-- 145s - loss: 0.0010 - mean_absolute_error: 0.0239 - acc: 0.8002 - val_loss: 9.6063e-04 - val_mean_absolute_error: 0.0219 - val_acc: 0.8037  
-Epoch 45/3000  
-- 140s - loss: 0.0010 - mean_absolute_error: 0.0237 - acc: 0.8020 - val_loss: 9.4013e-04 - val_mean_absolute_error: 0.0217 - val_acc: 0.7827  
-Epoch 46/3000  
-- 145s - loss: 0.0010 - mean_absolute_error: 0.0235 - acc: 0.7967 - val_loss: 9.1961e-04 - val_mean_absolute_error: 0.0214 - val_acc: 0.7944  
-Epoch 47/3000  
-- 147s - loss: 0.0010 - mean_absolute_error: 0.0237 - acc: 0.8072 - val_loss: 9.0973e-04 - val_mean_absolute_error: 0.0213 - val_acc: 0.7874  
-Epoch 48/3000  
-- 148s - loss: 9.7474e-04 - mean_absolute_error: 0.0231 - acc: 0.8078 - val_loss: 9.3755e-04 - val_mean_absolute_error: 0.0216 - val_acc: 0.8084  
-Epoch 49/3000  
-- 149s - loss: 9.7831e-04 - mean_absolute_error: 0.0232 - acc: 0.7956 - val_loss: 8.6974e-04 - val_mean_absolute_error: 0.0210 - val_acc: 0.8154  
+Epoch 44/3000 - 145s - loss: 0.0010 - mean_absolute_error: 0.0239 - acc: 0.8002 - val_loss: 9.6063e-04 - val_mean_absolute_error: 0.0219 - val_acc: 0.8037  
+Epoch 45/3000 - 140s - loss: 0.0010 - mean_absolute_error: 0.0237 - acc: 0.8020 - val_loss: 9.4013e-04 - val_mean_absolute_error: 0.0217 - val_acc: 0.7827  
+Epoch 46/3000 - 145s - loss: 0.0010 - mean_absolute_error: 0.0235 - acc: 0.7967 - val_loss: 9.1961e-04 - val_mean_absolute_error: 0.0214 - val_acc: 0.7944  
+Epoch 47/3000 - 147s - loss: 0.0010 - mean_absolute_error: 0.0237 - acc: 0.8072 - val_loss: 9.0973e-04 - val_mean_absolute_error: 0.0213 - val_acc: 0.7874  
+Epoch 48/3000 - 148s - loss: 9.7474e-04 - mean_absolute_error: 0.0231 - acc: 0.8078 - val_loss: 9.3755e-04 - val_mean_absolute_error: 0.0216 - val_acc: 0.8084  
+Epoch 49/3000 - 149s - loss: 9.7831e-04 - mean_absolute_error: 0.0232 - acc: 0.7956 - val_loss: 8.6974e-04 - val_mean_absolute_error: 0.0210 - val_acc: 0.8154  
 Epoch 00049: early stopping  
 
 ![model accuracy](/images/fkd_model_acc.png)
