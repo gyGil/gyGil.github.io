@@ -154,7 +154,7 @@ Epoch 00049: early stopping
 
 ## Step 2: Compare various CNN models
 I tried many different model to get the better validation accuracy. We can check this through the below the table.
-* Condition: MSE loss function, Adam optimizer, Early Stopping, ReLu Activation (except final layer), kernel size = 3x3
+* Condition: MSE loss function, Adam optimizer, Early Stopping, ReLu Activation (except final layer), kernel size = 3x3, Dropout(Fully Connected layer) = 50%  
 * Note: the numbers on structure indicate the filter numbers  
 ex. C(32): Convolution2D(filters=32, kernel_size=3, padding='same', activation='relu')  
            MaxPooling2D(pool_size=2)      
@@ -163,17 +163,17 @@ ex. C(32x2) = Convolution2D(filters=32, kernel_size=3, padding='same', activatio
                MaxPooling2D(pool_size=2)  
 ex. D(256) = Dense(256, activation='relu')  
 
-Structure                                    | Dropout(Dense) | Last Activation | Batch Size |Max Acc               
----------------------------------------------|----------------|-----------------|------------|----------
-C(32)-C(64)-C(128)-D(256)-D(1000)-D(30)      |       0.5      |      Tanh       |   256      | 71.96%                      
-C(32)-C(64)-C(128)-D(512)-D(30)              |       0.5      |      Tanh       |   256      | 71.50%              
-C(32)-C(64)-C(128)-D(512)-D(30)              |       0.5      |       X         |   256      | 71.03%          
-C(16)-C(32)-C(64)-C(128)-D(512)-D(30)        |       0.5      |      Tanh       |   256      | 71.96%
-C(16)-C(32)-C(64)-C(128)-D(512)-D(30)        |       0.5      |       X         |   256      | 74.30%
-C(16)-C(32)-C(64)-C(128)-D(512)-D(30)        |       0.5      |       X         |   64       | 74.77%
-C(16)-C(32)-C(64)-C(128)-D(512)-D(30)        |       0.5      |       X         |   16       | 78.74%
-C(16)-C(32)-C(64)-C(128)-D(512)-D(30)        |       0.5      |      Tanh       |   16       | 75.93%
-C(16x2)-C(32x2)-C(64x3)-C(128x3)-D(512)-D(30)|       0.5      |      Tanh       |   16       | 81.54%
+Structure                                    | Last Activation | Batch Size |Max Acc               
+---------------------------------------------|-----------------|------------|----------
+C(32)-C(64)-C(128)-D(256)-D(1000)-D(30)      |      Tanh       |   256      | 71.96%                      
+C(32)-C(64)-C(128)-D(512)-D(30)              |      Tanh       |   256      | 71.50%              
+C(32)-C(64)-C(128)-D(512)-D(30)              |       X         |   256      | 71.03%          
+C(16)-C(32)-C(64)-C(128)-D(512)-D(30)        |      Tanh       |   256      | 71.96%
+C(16)-C(32)-C(64)-C(128)-D(512)-D(30)        |       X         |   256      | 74.30%
+C(16)-C(32)-C(64)-C(128)-D(512)-D(30)        |       X         |   64       | 74.77%
+C(16)-C(32)-C(64)-C(128)-D(512)-D(30)        |       X         |   16       | 78.74%
+C(16)-C(32)-C(64)-C(128)-D(512)-D(30)        |      Tanh       |   16       | 75.93%
+C(16x2)-C(32x2)-C(64x3)-C(128x3)-D(512)-D(30)|      Tanh       |   16       | 81.54%
 
 
 ## Step 3: Create a CNN to Classify Dog Breeds (from Scratch)
