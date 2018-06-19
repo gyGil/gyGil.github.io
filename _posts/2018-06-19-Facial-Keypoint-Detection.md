@@ -62,7 +62,7 @@ for i in range(9):
 ![train data](/images/fkd_train_data.png)
 
 ## Step 1: Build CNN model to find keypoints on face
-I tried to test various models to get the better result. I tested single and multiple conv + maxpool layers with 1~3 fully connected layers at the end of model. I also tested dropout to generalize on conv layer which isn't work because conv layers is already generalized itself (conv layers's local connectivity). I only applied dropout on fully connected layer for generalization. I used ReLu activations through model except the final activation. I chose final activation as Tanh Because final output is -1 to 1. I used adaptive optimizer which is Adam which produced the best result and applied mean squared error as loss function that can evaluate continuous numerical outputs.
+I tried to test various models to get the better result. I tested single and multiple conv + maxpool layers with 1~3 fully connected layers at the end of model. I also tested dropout to generalize on conv layer which isn't work because conv layers is already generalized itself (conv layers's local connectivity). Dropout is applied to fully connected layer to reduce overfitting. I used ReLu activations through model except the final activation. I chose final activation as Tanh because final output is -1 to 1. The adaptive optimizer which is Adam was produced the best result. Loss function is applied mean squared error that can evaluate continuous numerical outputs. Early Stopping is used to stop when validation loss is not improved in few epochs. The below final model is inspired from VGG-16 and VGG-19.
 
 ```python
 # Import deep learning resources from Keras
@@ -121,66 +121,43 @@ dense_3 (Dense)                        | (None, 512)              |  2359808
 dropout_2 (Dropout)                    | (None, 512)              |  0
 dense_4 (Dense)                        | (None, 30)               |  15390
 
-    
+
 Total params: 2,852,942  
 Trainable params: 2,852,942  
 Non-trainable params: 0  
 
-### Pre-process the data
-When using TensorFlow as backend, Keras CNNs require a 4D array as input, with shape
-**(nb_samples,rows,columns,channels)**  
+### Training and loss/ accuracy
 ```python
-from keras.preprocessing import image                  
-from tqdm import tqdm
+from keras.optimizers import SGD, RMSprop, Adagrad, Adadelta, Adam, Adamax, Nadam
+from keras.callbacks import EarlyStopping, ModelCheckpoint
 
-def path_to_tensor(img_path):
-    # loads RGB image as PIL.Image.Image type
-    img = image.load_img(img_path, target_size=(224, 224))
-    # convert PIL.Image.Image type to 3D tensor with shape (224, 224, 3)
-    x = image.img_to_array(img)
-    # convert 3D tensor to 4D tensor with shape (1, 224, 224, 3) and return 4D tensor
-    return np.expand_dims(x, axis=0)
+adam = Adam() #Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False) default epsilon = 1e-07
+model.compile(optimizer=adam, loss='mean_squared_error', metrics=['mae', 'acc'])
 
-def paths_to_tensor(img_paths):
-    list_of_tensors = [path_to_tensor(img_path) for img_path in tqdm(img_paths)]
-    return np.vstack(list_of_tensors)
+earlystop = EarlyStopping(monitor='val_loss', min_delta=0.0001, patience=10, verbose=1, mode='auto')
+checkpointer = ModelCheckpoint(filepath='best_my_model.hdf5')
+callbacks_list = [earlystop, checkpointer]
+
+hist = model.fit(X_train, y_train, batch_size=16, epochs=3000, verbose=2,  callbacks=callbacks_list, validation_split=0.2, shuffle=True)
+
+model.save('my_model.h5')
 ```
 
-### Dog detector
-It makes the prediction using resnet50. If a image is classified between 151 to 268 using ResNet50, it is a dog image.
+- 145s - loss: 0.0010 - mean_absolute_error: 0.0239 - acc: 0.8002 - val_loss: 9.6063e-04 - val_mean_absolute_error: 0.0219 - val_acc: 0.8037  
+Epoch 45/3000  
+- 140s - loss: 0.0010 - mean_absolute_error: 0.0237 - acc: 0.8020 - val_loss: 9.4013e-04 - val_mean_absolute_error: 0.0217 - val_acc: 0.7827  
+Epoch 46/3000  
+- 145s - loss: 0.0010 - mean_absolute_error: 0.0235 - acc: 0.7967 - val_loss: 9.1961e-04 - val_mean_absolute_error: 0.0214 - val_acc: 0.7944  
+Epoch 47/3000  
+- 147s - loss: 0.0010 - mean_absolute_error: 0.0237 - acc: 0.8072 - val_loss: 9.0973e-04 - val_mean_absolute_error: 0.0213 - val_acc: 0.7874  
+Epoch 48/3000  
+- 148s - loss: 9.7474e-04 - mean_absolute_error: 0.0231 - acc: 0.8078 - val_loss: 9.3755e-04 - val_mean_absolute_error: 0.0216 - val_acc: 0.8084  
+Epoch 49/3000  
+- 149s - loss: 9.7831e-04 - mean_absolute_error: 0.0232 - acc: 0.7956 - val_loss: 8.6974e-04 - val_mean_absolute_error: 0.0210 - val_acc: 0.8154  
+Epoch 00049: early stopping  
 
-```python
-from keras.applications.resnet50 import preprocess_input, decode_predictions
-from keras.preprocessing import image                  
-from tqdm import tqdm
+## Step 2: Preprocess image
 
-def ResNet50_predict_labels(img_path):
-    # returns prediction vector for image located at img_path
-    img = preprocess_input(path_to_tensor(img_path))
-    return np.argmax(ResNet50_model.predict(img))
-
-def path_to_tensor(img_path):
-    # loads RGB image as PIL.Image.Image type
-    img = image.load_img(img_path, target_size=(224, 224))
-    # convert PIL.Image.Image type to 3D tensor with shape (224, 224, 3)
-    x = image.img_to_array(img)
-    # convert 3D tensor to 4D tensor with shape (1, 224, 224, 3) and return 4D tensor
-    return np.expand_dims(x, axis=0)
-
-def paths_to_tensor(img_paths):
-    list_of_tensors = [path_to_tensor(img_path) for img_path in tqdm(img_paths)]
-    return np.vstack(list_of_tensors)
-
-def ResNet50_predict_labels(img_path):
-    # returns prediction vector for image located at img_path
-    img = preprocess_input(path_to_tensor(img_path))
-    return np.argmax(ResNet50_model.predict(img))
-
-### returns "True" if a dog is detected in the image stored at img_path
-def dog_detector(img_path):
-    prediction = ResNet50_predict_labels(img_path)
-    return ((prediction <= 268) & (prediction >= 151))
-```
 
 ## Step 3: Create a CNN to Classify Dog Breeds (from Scratch)
 I will build a simple 3 layers of CNN with a dense layer from beginning without Transfer Learning for comparison purpose. Building CNN from the start requires a lot of dataset and training time. It is demonstration to show the weakness of building CNN from scratch compare to Transfer Learning.
@@ -236,37 +213,7 @@ model.add(GlobalAveragePooling2D())
 model.add(Dense(133,activation='softmax'))
 ```
 
-### Train model
-```python
-model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
-
-from keras.callbacks import ModelCheckpoint  
-
-epochs = 20
-
-### Do NOT modify the code below this line.
-
-checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.from_scratch.hdf5',
-                               verbose=1, save_best_only=True)
-
-model.fit(train_tensors, train_targets,
-          validation_data=(valid_tensors, valid_targets),
-          epochs=epochs, batch_size=20, callbacks=[checkpointer], verbose=1)
-```
-Epoch 20/20 loss: 4.3976 - acc: 0.0596 - val_loss: 4.5385 - val_acc: 0.0443
-
-### Test Model
-```python
-model.load_weights('saved_models/weights.best.from_scratch.hdf5')
-
-# get index of predicted dog breed for each image in test set
-dog_breed_predictions = [np.argmax(model.predict(np.expand_dims(tensor, axis=0))) for tensor in test_tensors]
-
-# report test accuracy
-test_accuracy = 100*np.sum(np.array(dog_breed_predictions)==np.argmax(test_targets, axis=1))/len(dog_breed_predictions)
-print('Test accuracy: %.4f%%' % test_accuracy)
-```
-Test accuracy: 6.1005%  
+## Step 2: Preprocess image
 
 ## Step 4: Create a CNN to Classify Dog Breeds with VGG-16 (using Transfer Learning)
 I used Transfer Learning with VGG-16 and a dense layer to train model faster and get better accuracy.
