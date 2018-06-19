@@ -12,15 +12,14 @@ tags:
 ---
 
 ## Introduction
-This project is to find the important keypoints on a face by using OpenCV and CNN. After finding the keypoints, the program generate the image and camera stream to wear sunglasses using keypoints on the faces. At the end of this blog, I will compare the performance among the various deep learning models.
+This project is to find the important keypoints on a face by using OpenCV and CNN. After finding the keypoints, the program generate the image and camera stream to wear sunglasses using keypoints on the faces. In the middle of this blog, I will compare the performance among the various deep learning models.
 
 ## Process
 * Step 0: Import datasets
 * Step 1: Build CNN model to find keypoints on face
-* Step 2: Preprocess image
+* Step 2: Compare various CNN models  
 * Step 3: Face Detection with OpenCV
-* Step 4: Final product
-* Step 5: Compare various CNN models
+* Step 4: Final product  
 
 ## Environment
 * Laptop with CUDA
@@ -152,7 +151,29 @@ Epoch 00049: early stopping
 
 ![model accuracy](/images/fkd_model_acc.png)
 ![model loss](/images/fkd_model_loss.png)
-## Step 2: Preprocess image
+
+## Step 2: Compare various CNN models
+I tried many different model to get the better validation accuracy. We can check this through the below the table.
+* Condition: MSE loss function, Adam optimizer, Early Stopping, ReLu Activation (except final layer), kernel size = 3x3
+* Note: the numbers on structure indicate the filter numbers  
+ex. C(32): Convolution2D(filters=32, kernel_size=3, padding='same', activation='relu')  
+           MaxPooling2D(pool_size=2)      
+ex. C(32x2) = Convolution2D(filters=32, kernel_size=3, padding='same', activation='relu')  
+               Convolution2D(filters=32, kernel_size=3, padding='same', activation='relu')   
+               MaxPooling2D(pool_size=2)  
+ex. D(256) = Dense(256, activation='relu')  
+
+Structure                                    | Dropout(Dense) | Last Activation | Batch Size |Max Acc               
+---------------------------------------------|----------------|-----------------|------------|----------
+C(32)-C(64)-C(128)-D(256)-D(1000)-D(30)      |       0.5      |      Tanh       |   256      | 71.96%                      
+C(32)-C(64)-C(128)-D(512)-D(30)              |       0.5      |      Tanh       |   256      | 71.50%              
+C(32)-C(64)-C(128)-D(512)-D(30)              |       0.5      |       X         |   256      | 71.03%          
+C(16)-C(32)-C(64)-C(128)-D(512)-D(30)        |       0.5      |      Tanh       |   256      | 71.96%
+C(16)-C(32)-C(64)-C(128)-D(512)-D(30)        |       0.5      |       X         |   256      | 74.30%
+C(16)-C(32)-C(64)-C(128)-D(512)-D(30)        |       0.5      |       X         |   64       | 74.77%
+C(16)-C(32)-C(64)-C(128)-D(512)-D(30)        |       0.5      |       X         |   16       | 78.74%
+C(16)-C(32)-C(64)-C(128)-D(512)-D(30)        |       0.5      |      Tanh       |   16       | 75.93%
+C(16x2)-C(32x2)-C(64x3)-C(128x3)-D(512)-D(30)|       0.5      |      Tanh       |   16       | 81.54%
 
 
 ## Step 3: Create a CNN to Classify Dog Breeds (from Scratch)
