@@ -59,35 +59,72 @@ for i in range(9):
     ax = fig.add_subplot(3, 3, i + 1, xticks=[], yticks=[])
     plot_data(X_train[i], y_train[i], ax)
 ```
-![train data](images\fkd_train_data.png)
+![train data](/images/fkd_train_data.png)
 
-## Step 1: Detect Humans
-I used [Haar feature-based cascade classifiers](https://docs.opencv.org/trunk/d7/d8b/tutorial_py_face_detection.html) to detect human faces in images. OpenCV provides many pre-trained face detectors, stored as XML files on [github](https://github.com/opencv/opencv/tree/master/data/haarcascades).
+## Step 1: Build CNN model to find keypoints on face
+I tried to test various models to get the better result. I tested single and multiple conv + maxpool layers with 1~3 fully connected layers at the end of model. I also tested dropout to generalize on conv layer which isn't work because conv layers is already generalized itself (conv layers's local connectivity). I only applied dropout on fully connected layer for generalization. I used ReLu activations through model except the final activation. I chose final activation as Tanh Because final output is -1 to 1. I used adaptive optimizer which is Adam which produced the best result and applied mean squared error as loss function that can evaluate continuous numerical outputs.
 
 ```python
-import cv2    
+# Import deep learning resources from Keras
+from keras.models import Sequential
+from keras.layers import Convolution2D, MaxPooling2D, Dropout
+from keras.layers import Flatten, Dense
 
-# extract pre-trained face detector
-face_cascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_alt.xml')
+model = Sequential()
 
-# returns "True" if face is detected in image stored at img_path
-def face_detector(img_path):
-    img = cv2.imread(img_path)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray)
+model.add(Convolution2D(filters=16, kernel_size=3, padding='same', activation='relu',
+                       input_shape=(96, 96, 1)))
+model.add(Convolution2D(filters=16, kernel_size=3, padding='same', activation='relu'))
+model.add(MaxPooling2D(pool_size=2))
 
-    return len(faces) > 0
+model.add(Convolution2D(filters=32, kernel_size=3, padding='same', activation='relu'))
+model.add(Convolution2D(filters=32, kernel_size=3, padding='same', activation='relu'))
+model.add(MaxPooling2D(pool_size=2))
+
+model.add(Convolution2D(filters=64, kernel_size=3, padding='same', activation='relu'))
+model.add(Convolution2D(filters=64, kernel_size=3, padding='same', activation='relu'))
+model.add(Convolution2D(filters=64, kernel_size=3, padding='same', activation='relu'))
+model.add(MaxPooling2D(pool_size=2))
+
+model.add(Convolution2D(filters=128, kernel_size=3, padding='same', activation='relu'))
+model.add(Convolution2D(filters=128, kernel_size=3, padding='same', activation='relu'))
+model.add(Convolution2D(filters=128, kernel_size=3, padding='same', activation='relu'))
+model.add(MaxPooling2D(pool_size=2))
+
+model.add(Flatten())
+model.add(Dense(512, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(30, activation='tanh'))
+
+# Summarize the model
+model.summary()
 ```
 
-## Step 2: Detect Dogs with ResNet-50
-I used a pre-trained ResNet-50 model to detect dogs in images.
-```python
-from keras.applications.resnet50 import ResNet50
-
-# define ResNet50 model
-ResNet50_model = ResNet50(weights='imagenet')
-```
-
+Layer (type)                           | Output Shape             | Param #   
+---------------------------------------|--------------------------|-----------
+conv2d_11 (Conv2D)                     | (None, 96, 96, 16)       |  160          
+conv2d_12 (Conv2D)                     | (None, 96, 96, 16)       |  2320       
+max_pooling2d_5 (MaxPooling2           | (None, 48, 48, 16)       |  0      
+conv2d_13 (Conv2D)                     | (None, 48, 48, 32)       |  4640   
+conv2d_14 (Conv2D)                     | (None, 48, 48, 32)       |  9248  
+max_pooling2d_6 (MaxPooling2           | (None, 24, 24, 32)       |  0
+conv2d_15 (Conv2D)                     | (None, 24, 24, 64)       |  18496
+conv2d_16 (Conv2D)                     | (None, 24, 24, 64)       |  36928
+conv2d_17 (Conv2D)                     | (None, 24, 24, 64)       |  36928  
+max_pooling2d_7 (MaxPooling2           | (None, 24, 24, 64)       |  0
+conv2d_18 (Conv2D)                     | (None, 12, 12, 128)      |  73856
+conv2d_19 (Conv2D)                     | (None, 12, 12, 128)      |  147584
+conv2d_20 (Conv2D)                     | (None, 12, 12, 128)      |  147584
+max_pooling2d_8 (MaxPooling2           | (None, 6, 6, 128)        |  0
+flatten_2 (Flatten)                    | (None, 4608)             |  0
+dense_3 (Dense)                        | (None, 512)              |  2359808
+dropout_2 (Dropout)                    | (None, 512)              |  0
+dense_4 (Dense)                        | (None, 30)               |  15390
+==============================================================================  
+Total params: 2,852,942  
+Trainable params: 2,852,942  
+Non-trainable params: 0  
+  
 ### Pre-process the data
 When using TensorFlow as backend, Keras CNNs require a 4D array as input, with shape
 **(nb_samples,rows,columns,channels)**  
