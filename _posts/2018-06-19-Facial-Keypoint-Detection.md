@@ -176,207 +176,115 @@ C(16)-C(32)-C(64)-C(128)-D(512)-D(30)        |      Tanh       |   16       | 75
 C(16x2)-C(32x2)-C(64x3)-C(128x3)-D(512)-D(30)|      Tanh       |   16       | 81.54%
 
 
-## Step 3: Create a CNN to Classify Dog Breeds (from Scratch)
-I will build a simple 3 layers of CNN with a dense layer from beginning without Transfer Learning for comparison purpose. Building CNN from the start requires a lot of dataset and training time. It is demonstration to show the weakness of building CNN from scratch compare to Transfer Learning.
-
-### pre-process the data.
-```python
-from PIL import ImageFile                            
-ImageFile.LOAD_TRUNCATED_IMAGES = True                 
-
-# pre-process the data for Keras
-train_tensors = paths_to_tensor(train_files).astype('float32')/255
-valid_tensors = paths_to_tensor(valid_files).astype('float32')/255
-test_tensors = paths_to_tensor(test_files).astype('float32')/255
-```
-
-### Build model.
-
-Layer (type)                           | Output Shape             | Param #   
----------------------------------------|--------------------------|-----------
-conv2d_4 (Conv2D)                      | (None, 224, 224, 16)     |  208          
-max_pooling2d_6 (MaxPooling2           | (None, 112, 112, 16)     |  0       
-conv2d_5 (Conv2D)                      | (None, 112, 112, 32)     |  2080      
-max_pooling2d_7 (MaxPooling2           | (None, 56, 56, 32)       |  0   
-conv2d_6 (Conv2D)                      | (None, 56, 56, 64)       |  8256  
-max_pooling2d_8 (MaxPooling2           | (None, 28, 28, 64)       |  0
-global_average_pooling2d_4 (           | (None, 64)               |  0
-dense_5 (Dense)                        | (None, 133)              |  8645         
-
-
-Total params: 19,189  
-Trainable params: 19,189  
-Non-trainable params: 0  
+## Step 3: Face Detection with OpenCV and wear sunglasses on the faces through camera stream.
+To feed the face into CNN model, we should insert 96x96 face image (gray) with normalization into input layer. So, I converted the color the original image to gray, extract the face using OpenCV cascade classifier and normalize the face image between 0.0 - 1.0. Finally I loaded a sunglasses image and place the sunglasses on face by using face Keypoints.
 
 ```python
-from keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D
-from keras.layers import Dropout, Flatten, Dense
-from keras.models import Sequential
+# Load in sunglasses image - note the usage of the special option
+# cv2.IMREAD_UNCHANGED, this option is used because the sunglasses
+# image has a 4th channel that allows us to control how transparent each pixel in the image is
+import cv2
+import matplotlib.pyplot as plt
+%matplotlib inline
+sunglasses = cv2.imread("images/sunglasses_4.png", cv2.IMREAD_UNCHANGED)
 
-model = Sequential()
-
-model.add(Conv2D(filters=16, kernel_size=2, padding='same',
-                        activation='relu', input_shape=(224,224,3)))
-model.add(MaxPooling2D(pool_size=2))
-model.add(Conv2D(filters=32, kernel_size=2, padding='same',
-                        activation='relu'))
-model.add(MaxPooling2D(pool_size=2))
-model.add(Conv2D(filters=64, kernel_size=2, padding='same',
-                        activation='relu'))
-model.add(MaxPooling2D(pool_size=2))
-
-# https://keras.io/layers/pooling/
-model.add(GlobalAveragePooling2D())
-model.add(Dense(133,activation='softmax'))
+# Plot the image
+fig = plt.figure(figsize = (6,6))
+ax1 = fig.add_subplot(111)
+ax1.set_xticks([])
+ax1.set_yticks([])
+ax1.imshow(sunglasses)
+ax1.axis('off');
 ```
-
-## Step 2: Preprocess image
-
-## Step 4: Create a CNN to Classify Dog Breeds with VGG-16 (using Transfer Learning)
-I used Transfer Learning with VGG-16 and a dense layer to train model faster and get better accuracy.
-
-Layer (type)                           | Output Shape             | Param #   
----------------------------------------|--------------------------|-----------
-global_average_pooling2d_5             | (None, 512)              |  0          
-dense_6 (Dense)                        | (None, 133)              |  68229       
-
-Total params: 68,229  
-Trainable params: 68,229  
-Non-trainable params: 0  
-
-### Train the model
+![model loss](/images/fkd_sunglasses.png)
 ```python
-bottleneck_features = np.load('bottleneck_features/DogVGG16Data.npz')
-train_VGG16 = bottleneck_features['train']
-valid_VGG16 = bottleneck_features['valid']
-test_VGG16 = bottleneck_features['test']
+face_cascade = cv2.CascadeClassifier('detector_architectures/haarcascade_frontalface_default.xml')
+def wear_suglasses(face_image, suglasses_image):
+    gray_image = np.copy(face_image)
+    gray_image = cv2.cvtColor(face_image, cv2.COLOR_RGB2GRAY)
+    faces = face_cascade.detectMultiScale(gray_image, 1.25, 6)
 
-VGG16_model = Sequential()
-VGG16_model.add(GlobalAveragePooling2D(input_shape=train_VGG16.shape[1:]))
-VGG16_model.add(Dense(133, activation='softmax'))
+    faces_cnn_data = np.ndarray(shape=(len(faces), 96, 96, 1), dtype='float', order='F')
 
-VGG16_model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
+    for i, (x,y,w,h) in enumerate(faces):
+        faces_cnn_data[i, :, :, 0] = cv2.resize(gray_image[y:y+h, x:x+w], (96, 96), cv2.INTER_LINEAR) / 255
 
-checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.VGG16.hdf5',
-                               verbose=1, save_best_only=True)
+    faces_keypoints = model.predict(faces_cnn_data)
 
-# Train model
-VGG16_model.fit(train_VGG16, train_targets,
-          validation_data=(valid_VGG16, valid_targets),
-          epochs=20, batch_size=20, callbacks=[checkpointer], verbose=1)
+    for i, (x,y,w,h) in enumerate(faces):
+        # rescale keypoints on face
+        faces_keypoints[i, 0::2] = faces_keypoints[i, 0::2] * (w/2) + (w/2) + x
+        faces_keypoints[i, 1::2] = faces_keypoints[i, 1::2] * (h/2) + (h/2) + y
+        faces_cnn_data[i,:,:,0] = cv2.resize(gray_image[y:y+h, x:x+w], (96, 96), cv2.INTER_LINEAR) /  255
+
+        # find sunglasses width and height
+        w_sunglasses = int(np.linalg.norm(np.array(faces_keypoints[i, 5*2:5*2+2]) - np.array(faces_keypoints[i, 3*2:3*2+2])) * 1.20)   
+        h_sunglasses = int(suglasses_image.shape[0] / suglasses_image.shape[1] * w_sunglasses) # keep the w/h ratio
+
+        # resize sunglasses
+        resized_sunglasses = cv2.resize(suglasses_image[:,:,:], (w_sunglasses, h_sunglasses), cv2.INTER_LINEAR)
+
+        # make mask for transparent area
+        sunglasses_mask = resized_sunglasses[:,:,3] > 0
+
+        # get suglasses x, y
+        sunglasses_x = int(((faces_keypoints[i, 2*2] + faces_keypoints[i, 4*2]) / 2) - (w_sunglasses / 2))
+        sunglasses_y = int(((faces_keypoints[i, 2*2 + 1] + faces_keypoints[i, 4*2 + 1]) / 2) - (h_sunglasses / 2))
+
+        # replace the sunglasses on face
+        face_image[sunglasses_y:sunglasses_y+resized_sunglasses.shape[0],
+                     sunglasses_x:sunglasses_x+resized_sunglasses.shape[1],:][sunglasses_mask] = \
+                     resized_sunglasses[:,:,0:3][sunglasses_mask]
+
+    return face_image
 ```
-Epoch 20/20 loss: 8.2550 - acc: 0.4740 - val_loss: 8.6555 - val_acc: 0.4012  
-
-### Test the model
 ```python
-VGG16_model.load_weights('saved_models/weights.best.VGG16.hdf5')
+import cv2
+import time
+from keras.models import load_model
+import numpy as np
 
-# get index of predicted dog breed for each image in test set
-VGG16_predictions = [np.argmax(VGG16_model.predict(np.expand_dims(feature, axis=0))) for feature in test_VGG16]
+def laptop_camera_go():
+    # Create instance of video capturer
+    cv2.namedWindow("face detection activated")
+    vc = cv2.VideoCapture(0)
 
-# report test accuracy
-test_accuracy = 100*np.sum(np.array(VGG16_predictions)==np.argmax(test_targets, axis=1))/len(VGG16_predictions)
-print('Test accuracy: %.4f%%' % test_accuracy)
+    # try to get the first frame
+    if vc.isOpened():
+        rval, frame = vc.read()
+    else:
+        rval = False
+
+    # Keep video stream open
+    while rval:
+        # Plot image from camera with detections marked
+        frame = wear_suglasses(frame, sunglasses)
+        cv2.imshow("face detection activated", frame)
+
+        # Exit functionality - press any key to exit laptop video
+        key = cv2.waitKey(20)
+        if key < 255: # exit by pressing any key
+            # Destroy windows
+            cv2.destroyAllWindows()
+
+            for i in range (1,5):
+                cv2.waitKey(1)
+            return
+
+        # Read next frame
+        time.sleep(0.05)             # control framerate for computation - default 20 frames per sec
+        rval, frame = vc.read()
+
+# Load facial landmark detector model
+model = load_model('my_model.h5')
+
+# Run sunglasses painter
+laptop_camera_go()
 ```
-Test accuracy: 39.9522%  
-
-## Step 5: Create a CNN to Classify Dog Breeds with VGG-19 (using Transfer Learning)
-I used Transfer Learning with VGG-19 and 2 dense layers to get better accuracy than above models.
-
-Layer (type)                           | Output Shape             | Param #   
----------------------------------------|--------------------------|-----------
-global_average_pooling2d_6             | (None, 512)              |  0          
-dense_7 (Dense)                        | (None, 50)               |  25650        
-dense_8 (Dense)                        | (None, 133)              |  6783  
-
-Total params: 32,433  
-Trainable params: 32,433  
-Non-trainable params: 0  
-
-### Train the model
-```python
-bottleneck_features = np.load('bottleneck_features/DogVGG19Data.npz')
-train_VGG19 = bottleneck_features['train']
-valid_VGG19 = bottleneck_features['valid']
-test_VGG19 = bottleneck_features['test']
-
-VGG19_model = Sequential()
-VGG19_model.add(GlobalAveragePooling2D(input_shape = train_VGG19.shape[1:]))
-VGG19_model.add(Dense(50))
-VGG19_model.add(Dense(133, activation='softmax'))
-
-# Train model
-checkpointer = ModelCheckpoint(filepath='saved_models/weights.bet.VGG19.hdf5',
-                              verbose = 1, save_best_only=True)
-
-VGG19_model.fit(train_VGG19, train_targets,
-               validation_data=(valid_VGG19, valid_targets),
-               epochs=40, batch_size=20, callbacks=[checkpointer], verbose = 1)
-```
-Epoch 20/40 loss: 0.0616 - acc: 0.9832 - val_loss: 1.6689 - val_acc: 0.7257     
-
-### Test the model
-```python
-VGG19_model.load_weights('saved_models/weights.bet.VGG19.hdf5')
-
-VGG19_predictions = [np.argmax(VGG19_model.predict(np.expand_dims(feature, axis=0))) for feature in test_VGG19]
-
-test_accuracy = 100 * np.sum(np.array(VGG19_predictions)==np.argmax(test_targets, axis=1))/len(VGG19_predictions)
-print('Test accuracy: %.4f%%' % test_accuracy)
-```
-Test accuracy: 72.2488%  
-
-## Step 6: Compare above 3 models
-The condition of training for all model:  
-20 epochs, learning rate  
-
-Structure      |    # Dense Layer   | Transfer Learning  | Test Accuracy               
----------------|--------------------|--------------------|---------------
-CNN: 3 Layers  |  1 (133 units)     |          X         | 6.10%                      
-CNN: VGG-16    |  1 (133 units)     |          O         | 39.95%              
-CNN: VGG-19    |  2 (50, 133 units) |          O         | 72.24%                 
-
-As you see, we can improve accuracy and reduce the training time a lot with Transfer Learning. Also VGG-19 has the better result than VGG-16 with 2 dense layers. VGG-19 has more stacked layers with more filters. It means it has more representation power than VGG-16 normally. Which means it can have better accuracy too. However, when we train more stacked CNN from scratch, it spends more memory, computation power, and time.  
-Also, we can figure out that we put 2 dense layers at the end of model, it leads to better accuracy than 1 dense layer.  
-
-## Outcome
-
-```python
-dog_human_detector("images/man-852762_960_720.jpg")
-dog_human_detector("images/GettyImages-694355292-1503877610-640x426.jpg")
-dog_human_detector("images/Taka_Shiba.jpg")
-dog_human_detector("images/eebabf5825e8247d99ac2cd118db840ff31d7bfa_hq.jpg")
-dog_human_detector("images/hotdog-taco-dog-today-161029-tease_845d920c7ea63371a9bf48203d22036f.jpg")
-dog_human_detector("images/dog-human-hybrid-woman.jpeg")
-```
-
-Hello, human!  
-![human 1](/images/dog1.png)
-You look like Cairn_terrier  
-
-Hello, human!  
-![human 2](/images/dog2.png)
-You look like German_shepherd_dog  
-
-Hello, human!  
-![dog 1](/images/dog3.png)
-You look like Akita  
-
-Hi, Dog!    
-![dog 2](/images/dog4.png)
-You look like Bull_terrier  
-
-Hi, Dog!  
-![dog 3](/images/dog5.png)
-You look like Dachshund  
-
-Hi, Dog!  
-![dog 4](/images/dog6.png)
-You look like English_toy_spaniel  
+![model loss](/images/fkd_final_product.png)
 
 
-
-[Source Code](https://github.com/gyGil/Dog-Breed-Classifier)  
+[Source Code](https://github.com/gyGil/Facial-Keypoint-Detection)  
 
 ## Reference
 [1] Facial Keypoints Detection | Kaggle. (n.d.). Retrieved from https://www.kaggle.com/c/facial-keypoints-detection/data
