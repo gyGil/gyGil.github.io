@@ -120,11 +120,12 @@ flatten_2 (Flatten)                    | (None, 4608)             |  0
 dense_3 (Dense)                        | (None, 512)              |  2359808
 dropout_2 (Dropout)                    | (None, 512)              |  0
 dense_4 (Dense)                        | (None, 30)               |  15390
-==============================================================================  
+
+    
 Total params: 2,852,942  
 Trainable params: 2,852,942  
 Non-trainable params: 0  
-  
+
 ### Pre-process the data
 When using TensorFlow as backend, Keras CNNs require a 4D array as input, with shape
 **(nb_samples,rows,columns,channels)**  
