@@ -156,6 +156,8 @@ Epoch 49/3000
 - 149s - loss: 9.7831e-04 - mean_absolute_error: 0.0232 - acc: 0.7956 - val_loss: 8.6974e-04 - val_mean_absolute_error: 0.0210 - val_acc: 0.8154  
 Epoch 00049: early stopping  
 
+![model accuracy](/images/fkd_model_acc.png)
+![model loss](/images/fkd_model_loss.png)
 ## Step 2: Preprocess image
 
 
